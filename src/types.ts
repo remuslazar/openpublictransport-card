@@ -21,6 +21,9 @@ export interface TripLeg {
   destination: string;
   line: string;
   product: string;
+  // Unified type ("bus", "subway", "walk", …), added by integration 2026.9.1.
+  // Older versions only send `product`, the provider's own name.
+  transport_type?: string;
   departure_planned: string;
   departure_estimated: string;
   arrival_planned: string;
@@ -34,6 +37,13 @@ export interface TripLeg {
 export interface TripData {
   departure: string;
   arrival: string;
+  // ISO timestamp of the journey start — the walk to the stop, when there is
+  // one. Absent on integrations older than 2026.8.2.
+  departure_timestamp?: string | null;
+  // Minutes until that start, as the sensor last computed it.
+  in_minutes?: number | null;
+  // Where the trip ends, e.g. "Reinoldikirche, Dortmund".
+  destination?: string;
   duration_minutes: number;
   transfers: number;
   connection_feasible: boolean;

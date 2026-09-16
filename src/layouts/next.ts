@@ -102,6 +102,8 @@ export class NextLayout extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
   @property({ attribute: false }) departures: Departure[] = [];
   @property({ type: String }) stationName = "";
+  // A trip sensor with no connection is not "no departures".
+  @property({ type: String }) emptyKey = "no_departures";
 
   private _renderCountdown(mins: number): string {
     const lang = this.hass?.language || "en";
@@ -115,7 +117,7 @@ export class NextLayout extends LitElement {
     const dep: Departure | undefined = this.departures[0];
 
     if (!dep) {
-      return html`<div class="next-empty">${localize(lang, "no_departures")}</div>`;
+      return html`<div class="next-empty">${localize(lang, this.emptyKey)}</div>`;
     }
 
     const badgeStyle = dep.line_color

@@ -106,7 +106,7 @@ export class TripLayout extends LitElement {
               `
             : nothing}
           <openpublictransport-transport-icon
-            transport-type=${leg.product}
+            transport-type=${leg.transport_type || leg.product}
           ></openpublictransport-transport-icon>
           <span>${leg.line}</span>
           ${leg.platform
