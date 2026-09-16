@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { CardConfig, HomeAssistant } from "./types";
 import { DEFAULT_CONFIG } from "./const";
 import { localize } from "./localize";
-import { isOptSensor } from "./detect";
+import { isOptSensor, detectModel } from "./detect";
 
 @customElement("openpublictransport-card-editor")
 export class OpenpublictransportCardEditor extends LitElement {
@@ -211,15 +211,22 @@ export class OpenpublictransportCardEditor extends LitElement {
           ></ha-switch>
         </div>
 
-        ${this._config.layout === "trip" ? this._renderTripFilterNote(lang) : this._renderFilters(lang)}
+        ${this._isTripEntity() ? this._renderTripFilterNote(lang) : this._renderFilters(lang)}
       </div>
     `;
+  }
+
+  /** True when the selected entity reports connections rather than departures. */
+  private _isTripEntity(): boolean {
+    if (!this.hass || !this._config?.entity) return false;
+    return detectModel(this.hass, this._config.entity) === "trip";
   }
 
   // A trip sensor reports one connection plus a few alternatives, and the
   // alternatives carry no line at all — so the card cannot filter a journey the
   // way it filters a departure board. The integration does it on the device,
-  // where a filtered-out connection can be replaced by the next one.
+  // where a filtered-out connection can be replaced by the next one. The entity
+  // decides this, not the layout: "next" reads a connection too (issue #9).
   private _renderTripFilterNote(lang: string) {
     return html`
       <div class="section-title">${localize(lang, "filters")}</div>

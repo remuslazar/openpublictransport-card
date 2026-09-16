@@ -142,6 +142,9 @@ export class OpenpublictransportCard extends LitElement {
     return {
       departure: attrs["departure"] as string,
       arrival: attrs["arrival"] as string,
+      departure_timestamp: attrs["departure_timestamp"] as string | null | undefined,
+      in_minutes: attrs["in_minutes"] as number | null | undefined,
+      destination: attrs["destination"] as string | undefined,
       duration_minutes: attrs["duration_minutes"] as number,
       transfers: attrs["transfers"] as number,
       connection_feasible: attrs["connection_feasible"] as boolean,
@@ -150,6 +153,57 @@ export class OpenpublictransportCard extends LitElement {
       legs: attrs["legs"] as any[],
       next_journeys: attrs["next_journeys"] as any[] | undefined,
     };
+  }
+
+  /**
+   * Reduce a connection to the one departure the traveller has to catch.
+   *
+   * The "next" layout answers "when do I have to move?", which a trip sensor
+   * can answer as well as a departure board — it just reports the whole journey
+   * instead (issue #9). The vehicle shown is the first one that is not a walk,
+   * the destination is where the trip ends rather than where that first vehicle
+   * terminates, and the countdown runs to the start of the journey: with a
+   * walking time configured that is when the traveller has to set off, which is
+   * also what the sensor's own state counts down to.
+   */
+  private _tripAsDeparture(trip: TripData): Departure | null {
+    const legs = trip.legs ?? [];
+    const ride = legs.find((leg) => (leg.transport_type || "").toLowerCase() !== "walk") ?? legs[0];
+    if (!ride) return null;
+
+    const boarding = ride.departure_estimated || ride.departure_planned || trip.departure;
+    const lastLeg = legs[legs.length - 1];
+
+    return {
+      line: ride.line,
+      destination: trip.destination || lastLeg?.destination || "",
+      departure_time: boarding,
+      planned_time: boarding,
+      delay: ride.delay ?? 0,
+      platform: ride.platform || "",
+      transportation_type: ride.transport_type || ride.product || "",
+      // EFA only fills the estimated time when it has realtime data for the leg.
+      is_realtime: Boolean(ride.departure_estimated),
+      minutes_until_departure: this._minutesUntilTrip(trip),
+    };
+  }
+
+  /**
+   * Minutes until a journey starts.
+   *
+   * Preferred over the sensor's `in_minutes` attribute, which only moves when
+   * the coordinator polls: this card re-renders every ten seconds, so counting
+   * from the timestamp keeps the countdown honest between updates. Falls back
+   * to the attribute for integrations too old to send a timestamp.
+   */
+  private _minutesUntilTrip(trip: TripData): number {
+    if (trip.departure_timestamp) {
+      const start = Date.parse(trip.departure_timestamp);
+      if (!Number.isNaN(start)) {
+        return Math.floor((start - Date.now()) / 60000);
+      }
+    }
+    return trip.in_minutes ?? 0;
   }
 
   private _getStationName(): string {
@@ -220,15 +274,22 @@ export class OpenpublictransportCard extends LitElement {
           ></openpublictransport-trip-layout>
         `;
 
-      case "next":
+      case "next": {
+        // A trip entity has no departure board to read, so the next connection
+        // stands in for the next departure (issue #9).
+        const isTrip = detectModel(this.hass, this._config.entity) === "trip";
+        const trip = isTrip ? this._getTripData() : null;
+        const next = trip ? this._tripAsDeparture(trip) : null;
         return html`
           <openpublictransport-next-layout
             .hass=${this.hass}
             .config=${this._config}
-            .departures=${this._getDepartures()}
+            .departures=${isTrip ? (next ? [next] : []) : this._getDepartures()}
             .stationName=${this._getStationName()}
+            .emptyKey=${isTrip ? "no_trip_data" : "no_departures"}
           ></openpublictransport-next-layout>
         `;
+      }
 
       case "table":
       default:
