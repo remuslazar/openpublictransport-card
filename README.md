@@ -89,8 +89,8 @@ show_header: true
 | `entity`                  | string  | **required** | Entity ID of the transport sensor                                      |
 | `layout`                  | string  | `table` | Card layout: `table`, `compact`, `next`, `trip`                             |
 | `max_departures`          | number  | `10`    | Maximum number of departures to display                                     |
-| `line_filter`             | string  | `""`    | Show only specific lines, comma-separated (e.g. `U6, S1, RE5`). Empty = all |
-| `destination_filter`      | string  | `""`    | Show only departures heading to matching destinations, comma-separated substring match (e.g. `Duisburg, Flughafen`). Empty = all |
+| `line_filter`             | string  | `""`    | Show only specific lines, comma-separated (e.g. `U6, S1, RE5`). Empty = all. Departure layouts only — see [Filters and the trip layout](#filters-and-the-trip-layout) |
+| `destination_filter`      | string  | `""`    | Show only departures heading to matching destinations, comma-separated substring match (e.g. `Duisburg, Flughafen`). Empty = all. Departure layouts only |
 | `show_header`             | boolean | `true`  | Show the card header with station name                                      |
 | `show_platform`           | boolean | `true`  | Show platform/track column                                                  |
 | `show_delay`              | boolean | `true`  | Show delay badges                                                           |
@@ -131,6 +131,27 @@ entity: sensor.dusseldorf_hbf_departures
 layout: table
 destination_filter: "Duisburg"   # only departures toward Duisburg
 ```
+
+## Filters and the trip layout
+
+Both filters apply to the departure layouts (`table`, `compact`, `next`). With `layout: trip`
+they do nothing, and the editor replaces them with a pointer to the device instead of showing
+fields that would be ignored.
+
+That is not an omission. A trip sensor reports one connection in full plus a handful of
+alternatives, and the alternatives carry only times, duration, transfers and transfer risk —
+no lines at all. A card filter could therefore judge the connection on screen but none of the
+ones that might replace it, so hiding a connection would leave the card empty even when the
+device has a matching one.
+
+Filter connections where the choice is still open — on the device:
+
+**Settings → Devices & services → OpenPublicTransport → your trip device → Configure**
+
+The **line filter** and the **transportation types** selector there apply to the whole
+connection: a journey is kept only when every vehicle on it passes, so a trip filtered to
+`U43, U47` no longer returns one that finishes on a bus. Requires integration 2026.9.1 or
+newer; before that the settings were shown on trip devices but ignored.
 
 ## Development
 

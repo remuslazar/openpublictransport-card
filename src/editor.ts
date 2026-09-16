@@ -51,6 +51,15 @@ export class OpenpublictransportCardEditor extends LitElement {
       opacity: 0.6;
       margin: 16px 0 8px;
     }
+    .filter-note {
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0.8;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid var(--divider-color, #ccc);
+      background: var(--secondary-background-color, transparent);
+    }
   `;
 
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -202,6 +211,24 @@ export class OpenpublictransportCardEditor extends LitElement {
           ></ha-switch>
         </div>
 
+        ${this._config.layout === "trip" ? this._renderTripFilterNote(lang) : this._renderFilters(lang)}
+      </div>
+    `;
+  }
+
+  // A trip sensor reports one connection plus a few alternatives, and the
+  // alternatives carry no line at all — so the card cannot filter a journey the
+  // way it filters a departure board. The integration does it on the device,
+  // where a filtered-out connection can be replaced by the next one.
+  private _renderTripFilterNote(lang: string) {
+    return html`
+      <div class="section-title">${localize(lang, "filters")}</div>
+      <div class="filter-note">${localize(lang, "trip_filter_note")}</div>
+    `;
+  }
+
+  private _renderFilters(lang: string) {
+    return html`
         <div class="section-title">${localize(lang, "line_filter")}</div>
         <div class="config-row">
           <ha-textfield
@@ -233,7 +260,6 @@ export class OpenpublictransportCardEditor extends LitElement {
             style="width:100%"
           ></ha-textfield>
         </div>
-      </div>
     `;
   }
 }

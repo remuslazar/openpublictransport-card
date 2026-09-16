@@ -40,6 +40,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Show only these lines (comma-separated, e.g. U6, S1, RE5). Leave empty to show all.",
     destination_filter: "Destination Filter",
     destination_filter_hint: "Show only departures whose destination matches (comma-separated, partial match, e.g. Duisburg, Flughafen). Leave empty to show all.",
+    filters: "Filters",
+    trip_filter_note: "The line and destination filters apply to departure boards only. Filter connections on the device itself: Settings → Devices & services → your trip device → Configure.",
   },
   de: {
     now: "jetzt",
@@ -77,6 +79,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Nur diese Linien anzeigen (kommagetrennt, z.B. U6, S1, RE5). Leer lassen für alle.",
     destination_filter: "Zielfilter",
     destination_filter_hint: "Nur Abfahrten mit passendem Ziel anzeigen (kommagetrennt, Teiltreffer, z.B. Duisburg, Flughafen). Leer lassen für alle.",
+    filters: "Filter",
+    trip_filter_note: "Linien- und Zielfilter gelten nur für Abfahrtstafeln. Verbindungen filterst du am Gerät selbst: Einstellungen → Geräte & Dienste → dein Trip-Gerät → Konfigurieren.",
   },
   fr: {
     now: "maintenant",
@@ -114,6 +118,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Afficher uniquement ces lignes (séparées par des virgules, ex. U6, S1, RE5). Laisser vide pour tout afficher.",
     destination_filter: "Filtre de destination",
     destination_filter_hint: "Afficher uniquement les départs dont la destination correspond (séparées par des virgules, correspondance partielle, ex. Duisburg, Aéroport). Laisser vide pour tout afficher.",
+    filters: "Filtres",
+    trip_filter_note: "Les filtres de lignes et de destination ne s'appliquent qu'aux tableaux de départs. Filtrez les trajets sur l'appareil lui-même : Paramètres → Appareils et services → votre appareil de trajet → Configurer.",
   },
   nl: {
     now: "nu",
@@ -151,6 +157,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Toon alleen deze lijnen (kommagescheiden, bijv. U6, S1, RE5). Leeg laten voor alles.",
     destination_filter: "Bestemmingsfilter",
     destination_filter_hint: "Toon alleen vertrekken met een overeenkomende bestemming (kommagescheiden, gedeeltelijke overeenkomst, bijv. Duisburg, Luchthaven). Leeg laten voor alles.",
+    filters: "Filters",
+    trip_filter_note: "Lijn- en bestemmingsfilters gelden alleen voor vertrekborden. Filter verbindingen op het apparaat zelf: Instellingen → Apparaten en diensten → je reis-apparaat → Configureren.",
   },
   sv: {
     now: "nu",
@@ -188,6 +196,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Visa bara dessa linjer (kommaseparerade, t.ex. U6, S1, RE5). Lämna tomt för alla.",
     destination_filter: "Destinationsfilter",
     destination_filter_hint: "Visa bara avgångar vars destination matchar (kommaseparerade, delvis matchning, t.ex. Duisburg, Flygplats). Lämna tomt för alla.",
+    filters: "Filter",
+    trip_filter_note: "Linje- och destinationsfiltren gäller bara avgångstavlor. Filtrera förbindelser på själva enheten: Inställningar → Enheter och tjänster → din reseenhet → Konfigurera.",
   },
   pl: {
     now: "teraz",
@@ -225,6 +235,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Pokaż tylko te linie (oddzielone przecinkami, np. U6, S1, RE5). Zostaw puste, aby pokazać wszystkie.",
     destination_filter: "Filtr kierunku",
     destination_filter_hint: "Pokaż tylko odjazdy z pasującym kierunkiem (oddzielone przecinkami, częściowe dopasowanie, np. Duisburg, Lotnisko). Zostaw puste, aby pokazać wszystkie.",
+    filters: "Filtry",
+    trip_filter_note: "Filtry linii i kierunku działają tylko na tablicach odjazdów. Połączenia filtrujesz w samym urządzeniu: Ustawienia → Urządzenia i usługi → twoje urządzenie podróży → Konfiguruj.",
   },
   it: {
     now: "adesso",
@@ -262,6 +274,8 @@ const translations: Record<string, Record<string, string>> = {
     line_filter_hint: "Mostra solo queste linee (separate da virgola, es. U6, S1, RE5). Lascia vuoto per mostrare tutto.",
     destination_filter: "Filtro destinazione",
     destination_filter_hint: "Mostra solo le partenze con destinazione corrispondente (separate da virgola, corrispondenza parziale, es. Duisburg, Aeroporto). Lascia vuoto per mostrare tutto.",
+    filters: "Filtri",
+    trip_filter_note: "I filtri di linea e destinazione valgono solo per i tabelloni delle partenze. Filtra le connessioni sul dispositivo stesso: Impostazioni → Dispositivi e servizi → il tuo dispositivo viaggio → Configura.",
   },
 };
 

@@ -21,6 +21,9 @@ export interface TripLeg {
   destination: string;
   line: string;
   product: string;
+  // Unified type ("bus", "subway", "walk", …), added by integration 2026.9.1.
+  // Older versions only send `product`, the provider's own name.
+  transport_type?: string;
   departure_planned: string;
   departure_estimated: string;
   arrival_planned: string;
