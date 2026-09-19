@@ -320,7 +320,7 @@ export const cardStyles = css`
     align-items: center;
     gap: 4px 14px;
     margin-bottom: 16px;
-    font-size: var(--ha-font-size-s, 12px);
+    font-size: var(--ha-font-size-m, 14px);
     color: var(--opt-text-secondary);
   }
 
@@ -332,7 +332,7 @@ export const cardStyles = css`
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 16px;
+    --opt-icon-size: 18px;
     color: var(--opt-text-secondary);
   }
 

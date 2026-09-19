@@ -356,7 +356,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     align-items: center;
     gap: 4px 14px;
     margin-bottom: 16px;
-    font-size: var(--ha-font-size-s, 12px);
+    font-size: var(--ha-font-size-m, 14px);
     color: var(--opt-text-secondary);
   }
 
@@ -368,7 +368,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 16px;
+    --opt-icon-size: 18px;
     color: var(--opt-text-secondary);
   }
 
