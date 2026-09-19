@@ -31,16 +31,27 @@ export class TripLayout extends LitElement {
     }
   }
 
+  /**
+   * Localized label for a transfer-risk level. Falls back to the old
+   * value-plus-noun form when a translation has no label for the level, so an
+   * unknown level still says something.
+   */
+  private _riskLabel(risk: string, lang: string): string {
+    const key = `risk_${risk.toLowerCase()}`;
+    const label = localize(lang, key);
+    return label === key ? `${risk} ${localize(lang, "risk")}` : label;
+  }
+
   private _getRiskIcon(risk: string): string {
     switch (risk.toLowerCase()) {
       case "low":
-        return "mdi:check-circle";
+        return "mdi:check-circle-outline";
       case "medium":
-        return "mdi:alert";
+        return "mdi:alert-outline";
       case "high":
         return "mdi:alert-octagon";
       default:
-        return "mdi:help-circle";
+        return "mdi:help-circle-outline";
     }
   }
 
@@ -59,21 +70,33 @@ export class TripLayout extends LitElement {
 
   private _renderMeta(trip: TripData) {
     const lang = this.hass.language;
+    const transfers = `${trip.transfers} ${
+      trip.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")
+    }`;
+    const risk = this._riskLabel(trip.transfer_risk, lang);
+    const minTransfer = `${localize(lang, "min_transfer")} ${trip.min_transfer_time} min`;
+
+    /* Each fact is an icon and its value; the icon says which fact it is, and
+       the full wording stays reachable as the item's tooltip and accessible
+       name rather than taking a line of the card. */
     return html`
       <div class="trip-meta">
-        <div class="trip-meta-item">
-          <ha-icon icon="mdi:swap-horizontal"></ha-icon>
-          <span>${trip.transfers} ${trip.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
+        <div class="trip-meta-item" title=${transfers} aria-label=${transfers}>
+          <ha-icon icon="mdi:transit-transfer"></ha-icon>
+          <span>${trip.transfers}</span>
         </div>
-        <div class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}">
+        <div
+          class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}"
+          title=${risk}
+          aria-label=${risk}
+        >
           <ha-icon icon=${this._getRiskIcon(trip.transfer_risk)}></ha-icon>
-          <span>${trip.transfer_risk} ${localize(lang, "risk")}</span>
         </div>
         ${trip.min_transfer_time > 0
           ? html`
-              <div class="trip-meta-item">
+              <div class="trip-meta-item" title=${minTransfer} aria-label=${minTransfer}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>min ${trip.min_transfer_time} min</span>
+                <span>${trip.min_transfer_time} min</span>
               </div>
             `
           : nothing}
@@ -94,7 +117,10 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class=${legClass}>
-        <div class="leg-station">${leg.origin}</div>
+        <div class="leg-head">
+          <div class="leg-station">${leg.origin}</div>
+          <div class="leg-duration">${leg.duration_minutes} min</div>
+        </div>
         <div class="leg-details">
           <span class="leg-time">${this._formatTime(leg.departure_planned)}</span>
           ${leg.delay > 0
@@ -108,11 +134,13 @@ export class TripLayout extends LitElement {
           <openpublictransport-transport-icon
             transport-type=${leg.transport_type || leg.product}
           ></openpublictransport-transport-icon>
-          <span>${leg.line}</span>
-          ${leg.platform
-            ? html`<span>&middot; ${localize(this.hass.language, "platform")} ${leg.platform}</span>`
+          ${leg.line ? html`<span class="leg-line">${leg.line}</span>` : nothing}
+          ${leg.direction
+            ? html`<span class="leg-direction">&rarr; ${leg.direction}</span>`
             : nothing}
-          <span>&middot; ${leg.duration_minutes} min</span>
+          ${leg.platform
+            ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
+            : nothing}
         </div>
         ${leg.transfer
           ? html`<div class="leg-transfer-info">${localize(this.hass.language, "transfer")}</div>`
@@ -130,7 +158,9 @@ export class TripLayout extends LitElement {
         ${lastLeg
           ? html`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
-                <div class="leg-station">${lastLeg.destination}</div>
+                <div class="leg-head">
+                  <div class="leg-station">${lastLeg.destination}</div>
+                </div>
                 <div class="leg-details">
                   <span class="leg-time">${this._formatTime(lastLeg.arrival_planned)}</span>
                 </div>
@@ -156,8 +186,12 @@ export class TripLayout extends LitElement {
               <span class="leg-time">${this._formatTime(alt.arrival)}</span>
               <span>${alt.duration_minutes} min</span>
               <span>${alt.transfers} ${alt.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
-              <span class=${this._getRiskClass(alt.transfer_risk)}>
-                <ha-icon icon=${this._getRiskIcon(alt.transfer_risk)} style="--opt-icon-size:14px;"></ha-icon>
+              <span class="alt-risk ${this._getRiskClass(alt.transfer_risk)}">
+                <ha-icon
+                  icon=${this._getRiskIcon(alt.transfer_risk)}
+                  title=${this._riskLabel(alt.transfer_risk, lang)}
+                  style="--opt-icon-size:16px;"
+                ></ha-icon>
               </span>
             </div>
           `

@@ -31,6 +31,9 @@ export interface TripLeg {
   delay: number;
   duration_minutes: number;
   platform: string;
+  // Where the vehicle itself is headed (its headsign) — "Herrenberg" for an S1
+  // that passes through. Sent by integrations new enough to expose it.
+  direction?: string;
   transfer?: boolean;
 }
 
@@ -61,7 +64,11 @@ export interface CardConfig {
   show_platform: boolean;
   show_delay: boolean;
   show_realtime_indicator: boolean;
-  theme: "dark" | "light" | "auto" | "ha";
+  /**
+   * @deprecated The card takes its colours from the Home Assistant theme, so
+   * this no longer selects a palette. Accepted so existing cards keep working.
+   */
+  theme?: "dark" | "light" | "auto" | "ha";
   line_filter?: string;
   destination_filter?: string;
 }

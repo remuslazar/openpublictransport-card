@@ -1,73 +1,53 @@
 import { css } from "lit";
 
 export const cardStyles = css`
+  /* Everything the card paints is taken from the Home Assistant palette, so it
+     follows the dashboard's theme — light, dark or custom — instead of carrying
+     colours of its own. The --opt-* indirection is kept because the layouts are
+     written against it. */
   :host {
-    --opt-bg: var(--ha-card-background, var(--card-background-color, #1a1a1a));
-    --opt-text: var(--primary-text-color, #ffd700);
-    --opt-text-secondary: var(--secondary-text-color, #cccccc);
-    --opt-delay-red: #e53935;
-    --opt-delay-green: #43a047;
-    --opt-delay-yellow: #fdd835;
-    --opt-border: var(--divider-color, rgba(255, 255, 255, 0.12));
-    --opt-header-bg: rgba(0, 0, 0, 0.2);
-    --opt-row-hover: rgba(255, 255, 255, 0.05);
-    --opt-accent: var(--accent-color, #ffd700);
-
-    height: 100%;
-  }
-
-  /* Dark theme */
-  :host([data-theme="dark"]) {
-    --opt-bg: #0a0a0a;
-    --opt-text: #ffd700;
-    --opt-text-secondary: #cccccc;
-    --opt-header-bg: rgba(0, 0, 0, 0.4);
-    --opt-row-hover: rgba(255, 215, 0, 0.05);
-    --opt-border: rgba(255, 215, 0, 0.15);
-  }
-
-  /* Light theme */
-  :host([data-theme="light"]) {
-    --opt-bg: #ffffff;
-    --opt-text: #1a1a1a;
-    --opt-text-secondary: #666666;
-    --opt-header-bg: #f5f5f5;
-    --opt-row-hover: rgba(0, 0, 0, 0.03);
-    --opt-border: rgba(0, 0, 0, 0.12);
-  }
-
-  /* Native Home Assistant theme — blend into the active dashboard theme */
-  :host([data-theme="ha"]) {
-    --opt-bg: var(--ha-card-background, var(--card-background-color, #fff));
+    --opt-bg: var(--ha-card-background, var(--card-background-color));
     --opt-text: var(--primary-text-color);
     --opt-text-secondary: var(--secondary-text-color);
     --opt-border: var(--divider-color);
-    --opt-header-bg: var(--secondary-background-color);
-    --opt-row-hover: var(--secondary-background-color);
-    --opt-accent: var(--primary-color, var(--accent-color));
-    --opt-delay-red: var(--error-color, #e53935);
-    --opt-delay-green: var(--success-color, #43a047);
-    --opt-delay-yellow: var(--warning-color, #fdd835);
+    --opt-accent: var(--primary-color);
+    /* Readable text on top of an accent-coloured surface (badges). */
+    --opt-on-accent: var(--text-primary-color);
+    --opt-delay-red: var(--error-color);
+    --opt-delay-green: var(--success-color);
+    --opt-delay-yellow: var(--warning-color);
+    /* Tinted from the text colour, so the same rule works on a light and on a
+       dark theme without a second palette. */
+    --opt-header-bg: color-mix(in srgb, var(--primary-text-color) 4%, transparent);
+    --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
+    --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
+
+    display: block;
   }
 
   ha-card {
     background: var(--opt-bg);
     color: var(--opt-text);
     overflow: hidden;
-    font-family: "Roboto Mono", "Courier New", monospace;
-    height: 100%;
+    font-family: var(--opt-font-family);
     display: flex;
     flex-direction: column;
+    /* The card takes the height its content needs. The max-height only bites
+       when the dashboard gives the card a definite height — a fixed row count —
+       and the body then scrolls instead of the card overflowing its cell. With
+       the row count on auto the height is indefinite, so this resolves to none
+       and the card simply grows. */
+    max-height: 100%;
   }
 
-  /* Each layout fills the card so its body (not the whole card) can scroll */
+  /* The layouts take the height their content needs; the card grows with them,
+     so a journey with more legs is not cut off by a fixed card height. */
   openpublictransport-table-layout,
   openpublictransport-next-layout,
   openpublictransport-compact-layout,
   openpublictransport-trip-layout {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
     min-height: 0;
   }
 
@@ -113,7 +93,6 @@ export const cardStyles = css`
   .card-content {
     /* left/right inset aligns columns with the header; bottom gap below last row */
     padding: 0 4px 12px;
-    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
   }
@@ -121,7 +100,7 @@ export const cardStyles = css`
   /* Disruption banner */
   .disruption-banner {
     background: var(--opt-delay-red);
-    color: #ffffff;
+    color: var(--opt-on-accent);
     padding: 8px 16px;
     font-size: 12px;
     display: flex;
@@ -209,7 +188,7 @@ export const cardStyles = css`
     font-weight: 700;
     font-size: 13px;
     background: var(--opt-accent);
-    color: #000000;
+    color: var(--opt-on-accent);
   }
 
   /* Destination */
@@ -296,124 +275,193 @@ export const cardStyles = css`
 
   /* Trip layout */
   .trip-container {
-    padding: 16px;
+    /* The wider left inset is the timeline's gutter: the rail and its dots live
+       in it, so the header, the facts, every leg and the alternatives all start
+       on the same column instead of three. */
+    padding: 16px 16px 16px 30px;
   }
 
   .trip-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
-    margin-bottom: 16px;
-    font-size: 16px;
-    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: var(--ha-font-size-l, 16px);
+    font-weight: var(--ha-font-weight-bold, 700);
+    font-variant-numeric: tabular-nums;
   }
 
   .trip-header .trip-arrow {
-    opacity: 0.5;
+    color: var(--opt-text-secondary);
   }
 
   .trip-header .trip-duration {
     margin-left: auto;
-    font-size: 13px;
-    font-weight: 400;
-    opacity: 0.7;
+    font-size: var(--ha-font-size-s, 12px);
+    font-weight: var(--ha-font-weight-normal, 400);
+    color: var(--opt-text-secondary);
   }
 
+  /* One quiet line of facts rather than a row of filled boxes, the way Home
+     Assistant renders a card's secondary information. */
   .trip-meta {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
     margin-bottom: 16px;
-    font-size: 12px;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
   }
 
   .trip-meta-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: var(--opt-header-bg);
+    cursor: default;
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 14px;
+    --opt-icon-size: 16px;
+    color: var(--opt-text-secondary);
   }
 
-  /* Transfer risk badges */
-  .risk-low {
+  /* Transfer risk. The colour rides on the icon so the label keeps the body
+     text's contrast — painted in the warning hue it was unreadable on a light
+     theme. A connection actually at risk is the one case loud enough to colour
+     the text as well. */
+  .risk-low ha-icon {
     color: var(--opt-delay-green);
   }
 
-  .risk-medium {
+  .risk-medium ha-icon {
     color: var(--opt-delay-yellow);
   }
 
-  .risk-high {
+  .risk-high,
+  .risk-high ha-icon {
     color: var(--opt-delay-red);
   }
 
-  /* Timeline */
+  /* Timeline. Everything is placed from the four sizes below, so the rail, the
+     dots and the text keep their relationship whatever those sizes become. */
   .trip-timeline {
+    --opt-line-width: 2px;
+    --opt-dot-size: 8px;
+    --opt-dot-ring: 2px;
+    --opt-station-line: 20px;
+    /* from the text column to the centre of the rail */
+    --opt-rail-offset: 14px;
+
     position: relative;
-    padding-left: 24px;
   }
 
   .trip-leg {
     position: relative;
     padding-bottom: 16px;
-    padding-left: 16px;
-    border-left: 2px solid var(--opt-border);
-    margin-left: 6px;
+  }
+
+  /* The rail runs from this leg's dot to the next one, so it meets both centres
+     and never leaves a gap at a leg boundary. */
+  .trip-leg::after {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--opt-rail-offset) - var(--opt-line-width) / 2);
+    top: calc(var(--opt-station-line) / 2);
+    bottom: calc(-1 * var(--opt-station-line) / 2);
+    width: var(--opt-line-width);
+    background: var(--opt-border);
   }
 
   .trip-leg:last-child {
-    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  .trip-leg:last-child::after {
+    display: none;
   }
 
   .trip-leg::before {
     content: "";
     position: absolute;
-    left: -7px;
-    top: 0;
-    width: 12px;
-    height: 12px;
+    /* the dot, ring included, centred on the rail */
+    left: calc(-1 * var(--opt-rail-offset) - var(--opt-dot-size) / 2 - var(--opt-dot-ring));
+    /* and on the middle of the station's first line */
+    top: calc((var(--opt-station-line) - var(--opt-dot-size)) / 2 - var(--opt-dot-ring));
+    width: var(--opt-dot-size);
+    height: var(--opt-dot-size);
     border-radius: 50%;
     background: var(--opt-accent);
-    border: 2px solid var(--opt-bg);
+    border: var(--opt-dot-ring) solid var(--opt-bg);
   }
 
+  /* A transfer is a hollow dot: a change of vehicle, not another colour. */
   .trip-leg.transfer::before {
-    background: var(--opt-delay-yellow);
+    background: var(--opt-bg);
+    box-shadow: inset 0 0 0 var(--opt-dot-ring) var(--opt-accent);
+  }
+
+  /* Station and duration share the leg's first line, so the durations line up
+     with the station names rather than floating beside the smaller detail row. */
+  .leg-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
   }
 
   .leg-station {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: var(--ha-font-size-m, 14px);
+    font-weight: var(--ha-font-weight-medium, 500);
+    line-height: var(--opt-station-line);
   }
 
   .leg-details {
-    font-size: 12px;
-    opacity: 0.7;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
   }
 
-  .leg-details ha-icon {
-    --opt-icon-size: 14px;
+  .leg-details ha-icon,
+  .leg-details openpublictransport-transport-icon {
+    --opt-icon-size: 16px;
   }
 
   .leg-time {
     font-variant-numeric: tabular-nums;
-    font-weight: 500;
+    font-weight: var(--ha-font-weight-medium, 500);
+  }
+
+  .leg-line {
+    font-weight: var(--ha-font-weight-medium, 500);
+  }
+
+  /* Where the vehicle is headed. It can be long, so it yields before the
+     duration does. */
+  .leg-direction {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  /* The duration sits at the right edge on the station's own line, in the same
+     type, so the journey's rhythm can be read down a single column. */
+  .leg-duration {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: var(--ha-font-size-m, 14px);
+    font-weight: var(--ha-font-weight-medium, 500);
+    line-height: var(--opt-station-line);
+    font-variant-numeric: tabular-nums;
+    color: var(--opt-text);
   }
 
   .leg-transfer-info {
-    font-size: 11px;
-    color: var(--opt-delay-yellow);
-    margin-top: 4px;
-    font-style: italic;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
+    margin-top: 2px;
   }
 
   /* Alternative journeys */
@@ -424,11 +472,9 @@ export const cardStyles = css`
   }
 
   .alt-journeys-title {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    opacity: 0.6;
+    font-size: var(--ha-font-size-s, 12px);
+    font-weight: var(--ha-font-weight-medium, 500);
+    color: var(--opt-text-secondary);
     margin-bottom: 8px;
   }
 
@@ -437,8 +483,19 @@ export const cardStyles = css`
     align-items: center;
     gap: 12px;
     padding: 6px 0;
-    font-size: 13px;
+    font-size: var(--ha-font-size-s, 12px);
+    font-variant-numeric: tabular-nums;
+    color: var(--opt-text-secondary);
     border-bottom: 1px solid var(--opt-border);
+  }
+
+  .alt-journey .leg-time {
+    color: var(--opt-text);
+  }
+
+  .alt-journey .alt-risk {
+    margin-left: auto;
+    display: inline-flex;
   }
 
   .alt-journey:last-child {
@@ -478,12 +535,12 @@ export const cardStyles = css`
 
   .delay-badge.delayed {
     background: var(--opt-delay-red);
-    color: #ffffff;
+    color: var(--opt-on-accent);
   }
 
   .delay-badge.on-time {
     background: var(--opt-delay-green);
-    color: #ffffff;
+    color: var(--opt-on-accent);
   }
 
   /* Editor styles */

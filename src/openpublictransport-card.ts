@@ -1,4 +1,4 @@
-import { LitElement, html, nothing, PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { cardStyles } from "./styles";
 import { CardConfig, Departure, TripData, HomeAssistant } from "./types";
@@ -86,21 +86,6 @@ export class OpenpublictransportCard extends LitElement {
       clearInterval(this._timeInterval);
       this._timeInterval = undefined;
     }
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    this._applyTheme();
-  }
-
-  private _applyTheme(): void {
-    if (!this._config) return;
-
-    let theme = this._config.theme;
-    if (theme === "auto") {
-      theme = this.hass?.themes?.darkMode ? "dark" : "light";
-    }
-    this.setAttribute("data-theme", theme);
   }
 
   private _getDepartures(): Departure[] {

@@ -98,14 +98,6 @@ export class OpenpublictransportCardEditor extends LitElement {
     this._fireConfigChanged();
   }
 
-  private _themeChanged(ev: Event): void {
-    const target = ev.target as any;
-    const value = target.value;
-    if (!this._config || !value) return;
-    this._config = { ...this._config, theme: value };
-    this._fireConfigChanged();
-  }
-
   private _maxDeparturesChanged(ev: Event): void {
     if (!this._config) return;
     const target = ev.target as HTMLInputElement;
@@ -153,16 +145,6 @@ export class OpenpublictransportCardEditor extends LitElement {
             <option value="compact" ?selected=${this._config.layout === "compact"}>${localize(lang, "compact_layout")}</option>
             <option value="trip" ?selected=${this._config.layout === "trip"}>${localize(lang, "trip_layout")}</option>
             <option value="next" ?selected=${this._config.layout === "next"}>${localize(lang, "next_layout")}</option>
-          </select>
-        </div>
-
-        <div class="config-row">
-          <label>${localize(lang, "theme")}</label>
-          <select .value=${this._config.theme} @change=${this._themeChanged}>
-            <option value="auto" ?selected=${this._config.theme === "auto"}>Auto</option>
-            <option value="dark" ?selected=${this._config.theme === "dark"}>Dark</option>
-            <option value="light" ?selected=${this._config.theme === "light"}>Light</option>
-            <option value="ha" ?selected=${this._config.theme === "ha"}>${localize(lang, "theme_ha")}</option>
           </select>
         </div>
 
