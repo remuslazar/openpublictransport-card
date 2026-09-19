@@ -791,8 +791,8 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
               </div>
             `}
       </div>
-    `}_renderLeg(t){const e=t.transfer?"trip-leg transfer":"trip-leg";return B`
-      <div class=${e}>
+    `}_renderLeg(t,e){const i=t.transfer?"trip-leg transfer":"trip-leg",n=this._formatTime(t.arrival_planned),r=!!e&&!!n&&n!==this._formatTime(e.departure_planned);return B`
+      <div class=${i}>
         <div class="leg-head">
           <div class="leg-station">${t.origin}</div>
           ${t.delay>0?B`
@@ -811,7 +811,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
           ${t.direction?B`<span class="leg-direction">&rarr; ${t.direction}</span>`:W}
           ${t.platform?B`<span>${yt(this.hass.language,"platform")} ${t.platform}</span>`:W}
           <span class="leg-duration">${this._formatDuration(t.duration_minutes)}</span>
-          <span class="leg-arrival">${this._formatTime(t.arrival_planned)}</span>
+          ${r?B`<span class="leg-arrival">${n}</span>`:W}
         </div>
         ${this._renderTransferNote(t)}
       </div>
@@ -822,7 +822,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       </div>
     `}_renderTimeline(t){const e=t.legs[t.legs.length-1];return B`
       <div class="trip-timeline">
-        ${t.legs.map(t=>this._renderLeg(t))}
+        ${t.legs.map((e,i)=>this._renderLeg(e,t.legs[i+1]))}
         ${e?B`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
                 <div class="leg-head">

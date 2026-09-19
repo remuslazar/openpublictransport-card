@@ -142,8 +142,14 @@ export class TripLayout extends LitElement {
     `;
   }
 
-  private _renderLeg(leg: TripLeg) {
+  private _renderLeg(leg: TripLeg, next?: TripLeg) {
     const legClass = leg.transfer ? "trip-leg transfer" : "trip-leg";
+    /* When this leg gets in, shown only where it tells the reader something:
+       if the next leg leaves the moment this one arrives the number below
+       already says it, and the last leg's arrival is the destination's own
+       time on the row beneath. What is left is the arrivals that open a wait. */
+    const arrival = this._formatTime(leg.arrival_planned);
+    const showArrival = !!next && !!arrival && arrival !== this._formatTime(next.departure_planned);
 
     return html`
       <div class=${legClass}>
@@ -171,7 +177,7 @@ export class TripLayout extends LitElement {
             ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
             : nothing}
           <span class="leg-duration">${this._formatDuration(leg.duration_minutes)}</span>
-          <span class="leg-arrival">${this._formatTime(leg.arrival_planned)}</span>
+          ${showArrival ? html`<span class="leg-arrival">${arrival}</span>` : nothing}
         </div>
         ${this._renderTransferNote(leg)}
       </div>
@@ -201,7 +207,7 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class="trip-timeline">
-        ${trip.legs.map((leg) => this._renderLeg(leg))}
+        ${trip.legs.map((leg, i) => this._renderLeg(leg, trip.legs[i + 1]))}
         ${lastLeg
           ? html`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
