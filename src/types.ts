@@ -34,7 +34,12 @@ export interface TripLeg {
   // Where the vehicle itself is headed (its headsign) — "Herrenberg" for an S1
   // that passes through. Sent by integrations new enough to expose it.
   direction?: string;
-  transfer?: boolean;
+  // The provider's description of the change out of this leg ("Fussweg"), or
+  // just a flag. Truthy means: change vehicles here.
+  transfer?: boolean | string;
+  // Minutes between this vehicle's arrival and the next one's departure — the
+  // wait on the platform after this leg.
+  transfer_minutes?: number;
 }
 
 export interface TripData {

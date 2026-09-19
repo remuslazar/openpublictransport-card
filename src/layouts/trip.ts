@@ -171,10 +171,27 @@ export class TripLayout extends LitElement {
             ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
             : nothing}
           <span class="leg-duration">${this._formatDuration(leg.duration_minutes)}</span>
+          <span class="leg-arrival">${this._formatTime(leg.arrival_planned)}</span>
         </div>
-        ${leg.transfer
-          ? html`<div class="leg-transfer-info">${localize(this.hass.language, "transfer")}</div>`
-          : nothing}
+        ${this._renderTransferNote(leg)}
+      </div>
+    `;
+  }
+
+  /**
+   * The change out of this leg, with the wait it costs. Standing on the
+   * platform, how long the connection is matters more than that there is one,
+   * and the journey's own minimum does not say at which change it falls.
+   */
+  private _renderTransferNote(leg: TripLeg) {
+    const hasWait = typeof leg.transfer_minutes === "number";
+    if (!leg.transfer && !hasWait) return nothing;
+
+    const label = localize(this.hass.language, "transfer");
+    return html`
+      <div class="leg-transfer-info">
+        <ha-icon icon="mdi:timer-outline"></ha-icon>
+        <span>${hasWait ? `${label} · ${this._formatDuration(leg.transfer_minutes as number)}` : label}</span>
       </div>
     `;
   }

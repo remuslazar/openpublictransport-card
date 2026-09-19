@@ -475,10 +475,27 @@ export const cardStyles = css`
     font-variant-numeric: tabular-nums;
   }
 
+  /* When this leg gets in, under the time it left. Set back, because the pair
+     that matters at a change is this arrival and the next leg's departure
+     directly below it — which is what makes the wait between them visible. */
+  .leg-arrival {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--opt-text-secondary);
+  }
+
   .leg-transfer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: var(--ha-font-size-s, 12px);
     color: var(--opt-text-secondary);
     margin-top: 2px;
+  }
+
+  .leg-transfer-info ha-icon {
+    --opt-icon-size: 16px;
   }
 
   /* Alternative journeys */
