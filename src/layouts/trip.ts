@@ -18,6 +18,35 @@ export class TripLayout extends LitElement {
     return timeStr || "";
   }
 
+  /**
+   * A duration in the viewer's own language: 83 minutes reads as "1h 23m" in
+   * English and "1h, 23 Min." in German, instead of a bare minute count that
+   * the reader has to divide by 60.
+   *
+   * `Intl.DurationFormat` carries the locale data for this (Chrome 129+,
+   * Safari 18.4+). Where it is missing — an older kiosk browser, say — the
+   * plain form is used, which is what the card showed before.
+   */
+  private _formatDuration(minutes: number): string {
+    const total = Math.max(0, Math.round(minutes || 0));
+    const hours = Math.floor(total / 60);
+    const mins = total % 60;
+    const durationFormat = (Intl as unknown as { DurationFormat?: new (...args: unknown[]) => { format: (d: unknown) => string } })
+      .DurationFormat;
+
+    if (durationFormat) {
+      try {
+        return new durationFormat(this.hass.language, { style: "narrow" }).format(
+          hours ? { hours, minutes: mins } : { minutes: mins }
+        );
+      } catch {
+        /* fall through to the plain form below */
+      }
+    }
+
+    return hours ? `${hours} h ${mins} min` : `${mins} min`;
+  }
+
   private _getRiskClass(risk: string): string {
     switch (risk.toLowerCase()) {
       case "low":
@@ -63,7 +92,7 @@ export class TripLayout extends LitElement {
         <span>${trip.departure}</span>
         <span class="trip-arrow">&rarr;</span>
         <span>${trip.arrival}</span>
-        <span class="trip-duration">${trip.duration_minutes} min</span>
+        <span class="trip-duration">${this._formatDuration(trip.duration_minutes)}</span>
       </div>
     `;
   }
@@ -74,7 +103,8 @@ export class TripLayout extends LitElement {
       trip.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")
     }`;
     const risk = this._riskLabel(trip.transfer_risk, lang);
-    const minTransfer = `${localize(lang, "min_transfer")} ${trip.min_transfer_time} min`;
+    const minTransferValue = this._formatDuration(trip.min_transfer_time);
+    const minTransfer = `${localize(lang, "min_transfer")} ${minTransferValue}`;
 
     /* Each fact is an icon and its value; the icon says which fact it is, and
        the full wording stays reachable as the item's tooltip and accessible
@@ -96,7 +126,7 @@ export class TripLayout extends LitElement {
           ? html`
               <div class="trip-meta-item" title=${minTransfer} aria-label=${minTransfer}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>${trip.min_transfer_time} min</span>
+                <span>${minTransferValue}</span>
               </div>
             `
           : nothing}
@@ -119,7 +149,7 @@ export class TripLayout extends LitElement {
       <div class=${legClass}>
         <div class="leg-head">
           <div class="leg-station">${leg.origin}</div>
-          <div class="leg-duration">${leg.duration_minutes} min</div>
+          <div class="leg-duration">${this._formatDuration(leg.duration_minutes)}</div>
         </div>
         <div class="leg-details">
           <span class="leg-time">${this._formatTime(leg.departure_planned)}</span>
@@ -184,7 +214,7 @@ export class TripLayout extends LitElement {
               <span class="leg-time">${this._formatTime(alt.departure)}</span>
               <span class="trip-arrow">&rarr;</span>
               <span class="leg-time">${this._formatTime(alt.arrival)}</span>
-              <span>${alt.duration_minutes} min</span>
+              <span>${this._formatDuration(alt.duration_minutes)}</span>
               <span>${alt.transfers} ${alt.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
               <span class="alt-risk ${this._getRiskClass(alt.transfer_risk)}">
                 <ha-icon

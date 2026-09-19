@@ -21,6 +21,10 @@ export const cardStyles = css`
     --opt-header-bg: color-mix(in srgb, var(--primary-text-color) 4%, transparent);
     --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
     --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
+    /* An icon's box centred against a line of text still reads a hair low: the
+       glyph's ink is not centred in its own box, and digits sit above the middle
+       of theirs. This is the correction, in one place so it can be tuned. */
+    --opt-icon-optical-lift: 1px;
 
     display: block;
   }
@@ -295,9 +299,10 @@ export const cardStyles = css`
     color: var(--opt-text-secondary);
   }
 
+  /* The journey's total reads at the same size as the times it belongs to; only
+     its weight and colour set it back. */
   .trip-header .trip-duration {
     margin-left: auto;
-    font-size: var(--ha-font-size-s, 12px);
     font-weight: var(--ha-font-weight-normal, 400);
     color: var(--opt-text-secondary);
   }
@@ -324,6 +329,7 @@ export const cardStyles = css`
   .trip-meta-item ha-icon {
     --opt-icon-size: 16px;
     color: var(--opt-text-secondary);
+    transform: translateY(calc(-1 * var(--opt-icon-optical-lift)));
   }
 
   /* Transfer risk. The colour rides on the icon so the label keeps the body
@@ -426,6 +432,7 @@ export const cardStyles = css`
   .leg-details ha-icon,
   .leg-details openpublictransport-transport-icon {
     --opt-icon-size: 16px;
+    transform: translateY(calc(-1 * var(--opt-icon-optical-lift)));
   }
 
   .leg-time {
