@@ -492,16 +492,23 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     min-width: 0;
   }
 
-  /* The duration sits at the right edge on the station's own line, in the same
-     type, so the journey's rhythm can be read down a single column. */
-  .leg-duration {
+  /* A station's own time sits at the right edge of its line, so the journey's
+     four times read down one column like a timetable. */
+  .leg-departure {
     margin-left: auto;
     flex-shrink: 0;
     font-size: var(--ha-font-size-m, 14px);
     font-weight: var(--ha-font-weight-medium, 500);
     line-height: var(--opt-station-line);
-    font-variant-numeric: tabular-nums;
     color: var(--opt-text);
+  }
+
+  /* The ride's length belongs to the vehicle that does it, so it travels with
+     the vehicle's line rather than with the station's. */
+  .leg-duration {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
   }
 
   .leg-transfer-info {
@@ -771,22 +778,22 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       <div class=${e}>
         <div class="leg-head">
           <div class="leg-station">${t.origin}</div>
-          <div class="leg-duration">${this._formatDuration(t.duration_minutes)}</div>
-        </div>
-        <div class="leg-details">
-          <span class="leg-time">${this._formatTime(t.departure_planned)}</span>
           ${t.delay>0?B`
                 <openpublictransport-delay-badge
                   .delay=${t.delay}
                   is-realtime
                 ></openpublictransport-delay-badge>
               `:W}
+          <div class="leg-time leg-departure">${this._formatTime(t.departure_planned)}</div>
+        </div>
+        <div class="leg-details">
           <openpublictransport-transport-icon
             transport-type=${t.transport_type||t.product}
           ></openpublictransport-transport-icon>
           ${t.line?B`<span class="leg-line">${t.line}</span>`:W}
           ${t.direction?B`<span class="leg-direction">&rarr; ${t.direction}</span>`:W}
           ${t.platform?B`<span>${yt(this.hass.language,"platform")} ${t.platform}</span>`:W}
+          <span class="leg-duration">${this._formatDuration(t.duration_minutes)}</span>
         </div>
         ${t.transfer?B`<div class="leg-transfer-info">${yt(this.hass.language,"transfer")}</div>`:W}
       </div>
@@ -797,9 +804,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
                 <div class="leg-head">
                   <div class="leg-station">${e.destination}</div>
-                </div>
-                <div class="leg-details">
-                  <span class="leg-time">${this._formatTime(e.arrival_planned)}</span>
+                  <div class="leg-time leg-departure">${this._formatTime(e.arrival_planned)}</div>
                 </div>
               </div>
             `:W}

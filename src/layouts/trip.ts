@@ -149,10 +149,6 @@ export class TripLayout extends LitElement {
       <div class=${legClass}>
         <div class="leg-head">
           <div class="leg-station">${leg.origin}</div>
-          <div class="leg-duration">${this._formatDuration(leg.duration_minutes)}</div>
-        </div>
-        <div class="leg-details">
-          <span class="leg-time">${this._formatTime(leg.departure_planned)}</span>
           ${leg.delay > 0
             ? html`
                 <openpublictransport-delay-badge
@@ -161,6 +157,9 @@ export class TripLayout extends LitElement {
                 ></openpublictransport-delay-badge>
               `
             : nothing}
+          <div class="leg-time leg-departure">${this._formatTime(leg.departure_planned)}</div>
+        </div>
+        <div class="leg-details">
           <openpublictransport-transport-icon
             transport-type=${leg.transport_type || leg.product}
           ></openpublictransport-transport-icon>
@@ -171,6 +170,7 @@ export class TripLayout extends LitElement {
           ${leg.platform
             ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
             : nothing}
+          <span class="leg-duration">${this._formatDuration(leg.duration_minutes)}</span>
         </div>
         ${leg.transfer
           ? html`<div class="leg-transfer-info">${localize(this.hass.language, "transfer")}</div>`
@@ -190,9 +190,7 @@ export class TripLayout extends LitElement {
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
                 <div class="leg-head">
                   <div class="leg-station">${lastLeg.destination}</div>
-                </div>
-                <div class="leg-details">
-                  <span class="leg-time">${this._formatTime(lastLeg.arrival_planned)}</span>
+                  <div class="leg-time leg-departure">${this._formatTime(lastLeg.arrival_planned)}</div>
                 </div>
               </div>
             `
