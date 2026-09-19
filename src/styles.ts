@@ -467,10 +467,10 @@ export const cardStyles = css`
     color: var(--opt-text);
   }
 
-  /* The ride's length belongs to the vehicle that does it, so it travels with
-     the vehicle's line rather than with the station's. */
+  /* The ride's length belongs to the vehicle that does it, so it follows the
+     line and its direction directly rather than being pushed to the far edge:
+     it reads as part of that sentence, and the right edge stays the times'. */
   .leg-duration {
-    margin-left: auto;
     flex-shrink: 0;
     font-variant-numeric: tabular-nums;
   }
