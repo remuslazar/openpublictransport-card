@@ -25,7 +25,11 @@ export class TransportIcon extends LitElement {
       --mdc-icon-size: var(--opt-icon-size, 24px);
       width: var(--opt-icon-size, 24px);
       height: var(--opt-icon-size, 24px);
-      display: block;
+      /* flex, not block: see the icon rule in styles.ts — as a block the
+         glyph sits about 2px low inside its own box. */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   `;
 

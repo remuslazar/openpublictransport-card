@@ -21,10 +21,6 @@ export const cardStyles = css`
     --opt-header-bg: color-mix(in srgb, var(--primary-text-color) 4%, transparent);
     --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
     --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
-    /* An icon's box centred against a line of text still reads a hair low: the
-       glyph's ink is not centred in its own box, and digits sit above the middle
-       of theirs. This is the correction, in one place so it can be tuned. */
-    --opt-icon-optical-lift: 1px;
 
     display: block;
   }
@@ -60,11 +56,20 @@ export const cardStyles = css`
     flex-shrink: 0;
   }
 
-  /* Icon sizing fallback: keeps legacy mdc variable and explicit dimensions in sync. */
+  /* Icon sizing fallback: keeps legacy mdc variable and explicit dimensions in sync.
+     The flex box is not cosmetic: an ha-icon holds an inline-flex ha-svg-icon,
+     so as a block it puts that child on a text baseline and the glyph lands
+     about 2px below the middle of the icon's own box — enough to read as
+     misaligned beside a label. Laying the child out as a flex item centres the
+     glyph in its box, which is what makes Home Assistant's own headings line
+     up, and removes any need to nudge icons by hand. */
   ha-icon {
     --mdc-icon-size: var(--opt-icon-size, 24px);
     width: var(--opt-icon-size, 24px);
     height: var(--opt-icon-size, 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .card-header {
@@ -329,7 +334,6 @@ export const cardStyles = css`
   .trip-meta-item ha-icon {
     --opt-icon-size: 16px;
     color: var(--opt-text-secondary);
-    transform: translateY(calc(-1 * var(--opt-icon-optical-lift)));
   }
 
   /* Transfer risk. The colour rides on the icon so the label keeps the body
@@ -432,7 +436,6 @@ export const cardStyles = css`
   .leg-details ha-icon,
   .leg-details openpublictransport-transport-icon {
     --opt-icon-size: 16px;
-    transform: translateY(calc(-1 * var(--opt-icon-optical-lift)));
   }
 
   .leg-time {
@@ -479,7 +482,7 @@ export const cardStyles = css`
   }
 
   .alt-journeys-title {
-    font-size: var(--ha-font-size-s, 12px);
+    font-size: var(--ha-font-size-m, 14px);
     font-weight: var(--ha-font-weight-medium, 500);
     color: var(--opt-text-secondary);
     margin-bottom: 8px;
