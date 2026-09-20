@@ -479,6 +479,16 @@ export const cardStyles = css`
     flex-shrink: 0;
   }
 
+  /* The badge's figures carry no descenders, so its ink rides high inside the
+     pill and the pill hangs below the digits it annotates — measured, 4.1px
+     under them against 1.7px above. No box alignment fixes that: the asymmetry
+     is inside the pill, not in how it is placed, and reshaping the box moves
+     both of its edges equally while the figures stay put. Two pixels up brings
+     the two sets of figures onto the same optical line. */
+  .leg-head-time openpublictransport-delay-badge {
+    transform: translateY(-2px);
+  }
+
   .leg-departure {
     flex-shrink: 0;
     font-size: var(--ha-font-size-m, 14px);
