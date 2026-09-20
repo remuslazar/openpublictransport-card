@@ -302,6 +302,30 @@ export const cardStyles = css`
 
   .trip-arrow {
     color: var(--opt-text-secondary);
+    /* The mark is drawn, so it is its own box that has to be placed: centred on
+       the line rather than sat on a text baseline it does not share. */
+    align-self: center;
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* Sized in em so it scales with whatever text it joins, and stroked in
+     currentColor so it inherits that text's colour. See the ARROW constant in
+     layouts/trip.ts for why it is drawn and not typed. */
+  .trip-arrow svg {
+    display: block;
+    width: 1.05em;
+    height: 1.05em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The header is bold, so its arrow carries the same weight. */
+  .trip-header .trip-arrow svg {
+    stroke-width: 2.6;
   }
 
   /* An arrow joins the two things on either side of it, so it keeps their

@@ -6,6 +6,19 @@ import { localize } from "../localize";
 import "../components/transport-icon";
 import "../components/delay-badge";
 
+/**
+ * The arrow that joins two values. Drawn rather than typed: U+2192 is not in
+ * Home Assistant's body font, so every platform renders it from a different
+ * fallback font and places it wherever that font happens to put it. On Linux it
+ * lands near the baseline as a hairline, well under the figures it sits
+ * between, and no bold face exists for it, so it stays thin in the header. An
+ * inline SVG is the same mark everywhere, takes the colour of the text around
+ * it and can carry that text's weight.
+ */
+const ARROW = html`<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M3.5 12h15M13.5 6.5 19 12l-5.5 5.5" />
+</svg>`;
+
 @customElement("openpublictransport-trip-layout")
 export class TripLayout extends LitElement {
   static styles = cardStyles;
@@ -101,7 +114,7 @@ export class TripLayout extends LitElement {
       <div class="trip-header">
         <span class="time-span">
           <span>${trip.departure}</span>
-          <span class="trip-arrow">&rarr;</span>
+          <span class="trip-arrow">${ARROW}</span>
           <span>${trip.arrival}</span>
         </span>
         <span class="trip-duration">${this._formatDuration(trip.duration_minutes)}</span>
@@ -190,7 +203,7 @@ export class TripLayout extends LitElement {
                   ${leg.line ? html`<span class="leg-line">${leg.line}</span>` : nothing}
                   ${leg.direction
                     ? html`
-                        <span class="trip-arrow">&rarr;</span>
+                        <span class="trip-arrow">${ARROW}</span>
                         <span class="leg-direction">${leg.direction}</span>
                       `
                     : nothing}
@@ -262,7 +275,7 @@ export class TripLayout extends LitElement {
             <div class="alt-journey">
               <span class="time-span">
                 <span class="leg-time">${this._formatTime(alt.departure)}</span>
-                <span class="trip-arrow">&rarr;</span>
+                <span class="trip-arrow">${ARROW}</span>
                 <span class="leg-time">${this._formatTime(alt.arrival)}</span>
               </span>
               <span>${this._formatDuration(alt.duration_minutes)}</span>
