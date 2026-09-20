@@ -106,27 +106,24 @@ export class TripLayout extends LitElement {
     const minTransferValue = this._formatDuration(trip.min_transfer_time);
     const minTransfer = `${localize(lang, "min_transfer")} ${minTransferValue}`;
 
-    /* Each fact is an icon and its value; the icon says which fact it is, and
-       the full wording stays reachable as the item's tooltip and accessible
-       name rather than taking a line of the card. */
+    /* Each fact says what it is. The icons alone were shorter, but a tooltip is
+       the only place the wording lived — and nobody hovers a wall display, so
+       the risk state in particular was carried by its colour alone. */
     return html`
       <div class="trip-meta">
-        <div class="trip-meta-item" title=${transfers} aria-label=${transfers}>
+        <div class="trip-meta-item" title=${transfers}>
           <ha-icon icon="mdi:transit-transfer"></ha-icon>
-          <span>${trip.transfers}</span>
+          <span>${transfers}</span>
         </div>
-        <div
-          class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}"
-          title=${risk}
-          aria-label=${risk}
-        >
+        <div class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}" title=${risk}>
           <ha-icon icon=${this._getRiskIcon(trip.transfer_risk)}></ha-icon>
+          <span>${risk}</span>
         </div>
         ${trip.min_transfer_time > 0
           ? html`
-              <div class="trip-meta-item" title=${minTransfer} aria-label=${minTransfer}>
+              <div class="trip-meta-item" title=${minTransfer}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>${minTransferValue}</span>
+                <span>${minTransfer}</span>
               </div>
             `
           : nothing}

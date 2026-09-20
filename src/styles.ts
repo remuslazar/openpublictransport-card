@@ -287,14 +287,14 @@ export const cardStyles = css`
     /* The card's content keeps Home Assistant's own 16px inset, so it starts on
        the same column as every other card on the dashboard. The timeline's rail
        and dots live inside that inset rather than pushing the content right. */
-    padding: 16px;
+    padding: 12px 16px;
   }
 
   .trip-header {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: var(--ha-font-size-l, 16px);
     font-weight: var(--ha-font-weight-bold, 700);
     font-variant-numeric: tabular-nums;
@@ -318,8 +318,8 @@ export const cardStyles = css`
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 14px;
-    margin-bottom: 16px;
+    gap: 2px 14px;
+    margin-bottom: 12px;
     font-size: var(--ha-font-size-m, 14px);
     color: var(--opt-text-secondary);
   }
