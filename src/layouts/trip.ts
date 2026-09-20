@@ -18,6 +18,35 @@ export class TripLayout extends LitElement {
     return timeStr || "";
   }
 
+  /**
+   * A duration in the viewer's own language: 83 minutes reads as "1h 23m" in
+   * English and "1h, 23 Min." in German, instead of a bare minute count that
+   * the reader has to divide by 60.
+   *
+   * `Intl.DurationFormat` carries the locale data for this (Chrome 129+,
+   * Safari 18.4+). Where it is missing — an older kiosk browser, say — the
+   * plain form is used, which is what the card showed before.
+   */
+  private _formatDuration(minutes: number): string {
+    const total = Math.max(0, Math.round(minutes || 0));
+    const hours = Math.floor(total / 60);
+    const mins = total % 60;
+    const durationFormat = (Intl as unknown as { DurationFormat?: new (...args: unknown[]) => { format: (d: unknown) => string } })
+      .DurationFormat;
+
+    if (durationFormat) {
+      try {
+        return new durationFormat(this.hass.language, { style: "narrow" }).format(
+          hours ? { hours, minutes: mins } : { minutes: mins }
+        );
+      } catch {
+        /* fall through to the plain form below */
+      }
+    }
+
+    return hours ? `${hours} h ${mins} min` : `${mins} min`;
+  }
+
   private _getRiskClass(risk: string): string {
     switch (risk.toLowerCase()) {
       case "low":
@@ -31,16 +60,27 @@ export class TripLayout extends LitElement {
     }
   }
 
+  /**
+   * Localized label for a transfer-risk level. Falls back to the old
+   * value-plus-noun form when a translation has no label for the level, so an
+   * unknown level still says something.
+   */
+  private _riskLabel(risk: string, lang: string): string {
+    const key = `risk_${risk.toLowerCase()}`;
+    const label = localize(lang, key);
+    return label === key ? `${risk} ${localize(lang, "risk")}` : label;
+  }
+
   private _getRiskIcon(risk: string): string {
     switch (risk.toLowerCase()) {
       case "low":
-        return "mdi:check-circle";
+        return "mdi:check-circle-outline";
       case "medium":
-        return "mdi:alert";
+        return "mdi:alert-outline";
       case "high":
         return "mdi:alert-octagon";
       default:
-        return "mdi:help-circle";
+        return "mdi:help-circle-outline";
     }
   }
 
@@ -49,31 +89,44 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class="trip-header">
-        <span>${trip.departure}</span>
-        <span class="trip-arrow">&rarr;</span>
-        <span>${trip.arrival}</span>
-        <span class="trip-duration">${trip.duration_minutes} min</span>
+        <span class="time-span">
+          <span>${trip.departure}</span>
+          <span class="trip-arrow">&rarr;</span>
+          <span>${trip.arrival}</span>
+        </span>
+        <span class="trip-duration">${this._formatDuration(trip.duration_minutes)}</span>
       </div>
     `;
   }
 
   private _renderMeta(trip: TripData) {
     const lang = this.hass.language;
+    const transfers = `${trip.transfers} ${
+      trip.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")
+    }`;
+    const risk = this._riskLabel(trip.transfer_risk, lang);
+    const minTransferValue = this._formatDuration(trip.min_transfer_time);
+    const minTransfer = `${localize(lang, "min_transfer")} ${minTransferValue}`;
+
+    /* A fact gets words where its value cannot speak for itself: a bare count
+       and a risk state mean nothing without them, and a tooltip is no help on a
+       wall display, where nobody hovers. The wait is the exception — a duration
+       beside a timer, on a line that has already said "transfer" once. */
     return html`
       <div class="trip-meta">
-        <div class="trip-meta-item">
-          <ha-icon icon="mdi:swap-horizontal"></ha-icon>
-          <span>${trip.transfers} ${trip.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
+        <div class="trip-meta-item" title=${transfers}>
+          <ha-icon icon="mdi:transit-transfer"></ha-icon>
+          <span>${transfers}</span>
         </div>
-        <div class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}">
+        <div class="trip-meta-item ${this._getRiskClass(trip.transfer_risk)}" title=${risk}>
           <ha-icon icon=${this._getRiskIcon(trip.transfer_risk)}></ha-icon>
-          <span>${trip.transfer_risk} ${localize(lang, "risk")}</span>
+          <span>${risk}</span>
         </div>
         ${trip.min_transfer_time > 0
           ? html`
-              <div class="trip-meta-item">
+              <div class="trip-meta-item" title=${minTransfer}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>min ${trip.min_transfer_time} min</span>
+                <span>${minTransferValue}</span>
               </div>
             `
           : nothing}
@@ -89,14 +142,19 @@ export class TripLayout extends LitElement {
     `;
   }
 
-  private _renderLeg(leg: TripLeg) {
+  private _renderLeg(leg: TripLeg, next?: TripLeg) {
     const legClass = leg.transfer ? "trip-leg transfer" : "trip-leg";
+    /* When this leg gets in, shown only where it tells the reader something:
+       if the next leg leaves the moment this one arrives the number below
+       already says it, and the last leg's arrival is the destination's own
+       time on the row beneath. What is left is the arrivals that open a wait. */
+    const arrival = this._formatTime(leg.arrival_planned);
+    const showArrival = !!next && !!arrival && arrival !== this._formatTime(next.departure_planned);
 
     return html`
       <div class=${legClass}>
-        <div class="leg-station">${leg.origin}</div>
-        <div class="leg-details">
-          <span class="leg-time">${this._formatTime(leg.departure_planned)}</span>
+        <div class="leg-head">
+          <div class="leg-station">${leg.origin}</div>
           ${leg.delay > 0
             ? html`
                 <openpublictransport-delay-badge
@@ -105,18 +163,50 @@ export class TripLayout extends LitElement {
                 ></openpublictransport-delay-badge>
               `
             : nothing}
+          <div class="leg-time leg-departure">${this._formatTime(leg.departure_planned)}</div>
+        </div>
+        <div class="leg-details">
           <openpublictransport-transport-icon
             transport-type=${leg.transport_type || leg.product}
           ></openpublictransport-transport-icon>
-          <span>${leg.line}</span>
-          ${leg.platform
-            ? html`<span>&middot; ${localize(this.hass.language, "platform")} ${leg.platform}</span>`
+          ${leg.line || leg.direction
+            ? html`
+                <span class="leg-service">
+                  ${leg.line ? html`<span class="leg-line">${leg.line}</span>` : nothing}
+                  ${leg.direction
+                    ? html`
+                        <span class="trip-arrow">&rarr;</span>
+                        <span class="leg-direction">${leg.direction}</span>
+                      `
+                    : nothing}
+                </span>
+              `
             : nothing}
-          <span>&middot; ${leg.duration_minutes} min</span>
+          ${leg.platform
+            ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
+            : nothing}
+          <span class="leg-duration">${this._formatDuration(leg.duration_minutes)}</span>
+          ${showArrival ? html`<span class="leg-arrival">${arrival}</span>` : nothing}
         </div>
-        ${leg.transfer
-          ? html`<div class="leg-transfer-info">${localize(this.hass.language, "transfer")}</div>`
-          : nothing}
+        ${this._renderTransferNote(leg)}
+      </div>
+    `;
+  }
+
+  /**
+   * The change out of this leg, with the wait it costs. Standing on the
+   * platform, how long the connection is matters more than that there is one,
+   * and the journey's own minimum does not say at which change it falls.
+   */
+  private _renderTransferNote(leg: TripLeg) {
+    const hasWait = typeof leg.transfer_minutes === "number";
+    if (!leg.transfer && !hasWait) return nothing;
+
+    const label = localize(this.hass.language, "transfer");
+    return html`
+      <div class="leg-transfer-info">
+        <ha-icon icon="mdi:timer-outline"></ha-icon>
+        <span>${hasWait ? `${label} · ${this._formatDuration(leg.transfer_minutes as number)}` : label}</span>
       </div>
     `;
   }
@@ -126,13 +216,13 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class="trip-timeline">
-        ${trip.legs.map((leg) => this._renderLeg(leg))}
+        ${trip.legs.map((leg, i) => this._renderLeg(leg, trip.legs[i + 1]))}
         ${lastLeg
           ? html`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
-                <div class="leg-station">${lastLeg.destination}</div>
-                <div class="leg-details">
-                  <span class="leg-time">${this._formatTime(lastLeg.arrival_planned)}</span>
+                <div class="leg-head">
+                  <div class="leg-station">${lastLeg.destination}</div>
+                  <div class="leg-time leg-departure">${this._formatTime(lastLeg.arrival_planned)}</div>
                 </div>
               </div>
             `
@@ -151,13 +241,19 @@ export class TripLayout extends LitElement {
         ${trip.next_journeys.map(
           (alt) => html`
             <div class="alt-journey">
-              <span class="leg-time">${this._formatTime(alt.departure)}</span>
-              <span class="trip-arrow">&rarr;</span>
-              <span class="leg-time">${this._formatTime(alt.arrival)}</span>
-              <span>${alt.duration_minutes} min</span>
+              <span class="time-span">
+                <span class="leg-time">${this._formatTime(alt.departure)}</span>
+                <span class="trip-arrow">&rarr;</span>
+                <span class="leg-time">${this._formatTime(alt.arrival)}</span>
+              </span>
+              <span>${this._formatDuration(alt.duration_minutes)}</span>
               <span>${alt.transfers} ${alt.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
-              <span class=${this._getRiskClass(alt.transfer_risk)}>
-                <ha-icon icon=${this._getRiskIcon(alt.transfer_risk)} style="--opt-icon-size:14px;"></ha-icon>
+              <span class="alt-risk ${this._getRiskClass(alt.transfer_risk)}">
+                <ha-icon
+                  icon=${this._getRiskIcon(alt.transfer_risk)}
+                  title=${this._riskLabel(alt.transfer_risk, lang)}
+                  style="--opt-icon-size:16px;"
+                ></ha-icon>
               </span>
             </div>
           `

@@ -123,19 +123,24 @@ export const cardStyles = css`
     color: var(--opt-text);
     overflow: hidden;
     font-family: var(--opt-font-family);
-    height: 100%;
     display: flex;
     flex-direction: column;
+    /* The card takes the height its content needs. The max-height only bites
+       when the dashboard gives the card a definite height — a fixed row count —
+       and the body then scrolls instead of the card overflowing its cell. With
+       the row count on auto the height is indefinite, so this resolves to none
+       and the card simply grows. */
+    max-height: 100%;
   }
 
-  /* Each layout fills the card so its body (not the whole card) can scroll */
+  /* The layouts take the height their content needs; the card grows with them,
+     so a journey with more legs is not cut off by a fixed card height. */
   openpublictransport-table-layout,
   openpublictransport-next-layout,
   openpublictransport-compact-layout,
   openpublictransport-trip-layout {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
     min-height: 0;
   }
 
@@ -197,7 +202,6 @@ export const cardStyles = css`
   .card-content {
     /* left/right inset aligns columns with the header; bottom gap below last row */
     padding: 0 4px 12px;
-    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
   }
@@ -381,140 +385,265 @@ export const cardStyles = css`
 
   /* Trip layout */
   .trip-container {
-    padding: 16px;
+    /* The card's content keeps Home Assistant's own 16px inset, so it starts on
+       the same column as every other card on the dashboard. The timeline's rail
+       and dots live inside that inset rather than pushing the content right. */
+    padding: 12px 16px;
   }
 
   .trip-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
-    margin-bottom: 16px;
-    font-size: 16px;
-    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: var(--ha-font-size-l, 16px);
+    font-weight: var(--ha-font-weight-bold, 700);
+    font-variant-numeric: tabular-nums;
   }
 
-  .trip-header .trip-arrow {
-    opacity: 0.5;
+  .trip-arrow {
+    color: var(--opt-text-secondary);
   }
 
+  /* An arrow joins the two things on either side of it, so it keeps their
+     company rather than the row's — in a row's own gap it read as another
+     column separator, with as much air around it as unrelated values have. */
+  .time-span {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  /* The journey's total reads at the same size as the times it belongs to; only
+     its weight and colour set it back. */
   .trip-header .trip-duration {
     margin-left: auto;
-    font-size: 13px;
-    font-weight: 400;
-    opacity: 0.7;
+    font-weight: var(--ha-font-weight-normal, 400);
+    color: var(--opt-text-secondary);
   }
 
+  /* One quiet line of facts rather than a row of filled boxes, the way Home
+     Assistant renders a card's secondary information. */
   .trip-meta {
     display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    font-size: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 12px;
+    margin-bottom: 12px;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
   }
 
   .trip-meta-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: var(--opt-header-bg);
+    cursor: default;
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 14px;
+    --opt-icon-size: 16px;
+    color: var(--opt-text-secondary);
   }
 
-  /* Transfer risk badges */
-  .risk-low {
+  /* Transfer risk. The colour rides on the icon so the label keeps the body
+     text's contrast — painted in the warning hue it was unreadable on a light
+     theme. A connection actually at risk is the one case loud enough to colour
+     the text as well. */
+  .risk-low ha-icon {
     color: var(--opt-delay-green);
   }
 
-  .risk-medium {
+  .risk-medium ha-icon {
     color: var(--opt-delay-yellow);
   }
 
-  .risk-high {
+  .risk-high,
+  .risk-high ha-icon {
     color: var(--opt-delay-red);
   }
 
-  /* Timeline */
+  /* Timeline. Everything is placed from the four sizes below, so the rail, the
+     dots and the text keep their relationship whatever those sizes become. */
   .trip-timeline {
+    --opt-line-width: 2px;
+    --opt-dot-size: 6px;
+    --opt-dot-ring: 2px;
+    /* the hollow marker's stroke: thinner than the outer ring, so a dot this
+       small keeps a visible centre */
+    --opt-dot-stroke: 1.5px;
+    --opt-station-line: 20px;
+    /* Gap between the dots and the text they mark. */
+    --opt-dot-gap: 5px;
+    /* From the legs' text back to the centre of the rail. */
+    --opt-rail-offset: calc(
+      var(--opt-dot-gap) + (var(--opt-dot-size) + 2 * var(--opt-dot-ring)) / 2
+    );
+
     position: relative;
-    padding-left: 24px;
+    /* Indenting the legs by exactly that offset puts the rail on the same
+       column as the header, the facts and the alternatives — it reads as one
+       vertical rule through the card's content — while the dots, being wider
+       than the rule, straddle that column and sit a little into the padding. */
+    padding-left: var(--opt-rail-offset);
   }
 
   .trip-leg {
     position: relative;
     padding-bottom: 16px;
-    padding-left: 16px;
-    border-left: 2px solid var(--opt-border);
-    margin-left: 6px;
+  }
+
+  /* The rail runs from this leg's dot to the next one, so it meets both centres
+     and never leaves a gap at a leg boundary. */
+  .trip-leg::after {
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--opt-rail-offset) - var(--opt-line-width) / 2);
+    top: calc(var(--opt-station-line) / 2);
+    bottom: calc(-1 * var(--opt-station-line) / 2);
+    width: var(--opt-line-width);
+    background: var(--opt-border);
   }
 
   .trip-leg:last-child {
-    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  .trip-leg:last-child::after {
+    display: none;
   }
 
   .trip-leg::before {
     content: "";
     position: absolute;
-    left: -7px;
-    top: 0;
-    width: 12px;
-    height: 12px;
+    /* the dot, ring included, centred on the rail */
+    left: calc(-1 * var(--opt-rail-offset) - var(--opt-dot-size) / 2 - var(--opt-dot-ring));
+    /* and on the middle of the station's first line */
+    top: calc((var(--opt-station-line) - var(--opt-dot-size)) / 2 - var(--opt-dot-ring));
+    width: var(--opt-dot-size);
+    height: var(--opt-dot-size);
     border-radius: 50%;
     background: var(--opt-accent);
-    border: 2px solid var(--opt-bg);
+    border: var(--opt-dot-ring) solid var(--opt-bg);
   }
 
+  /* A transfer is a hollow dot: a change of vehicle, not another colour. */
   .trip-leg.transfer::before {
-    background: var(--opt-delay-yellow);
+    background: var(--opt-bg);
+    box-shadow: inset 0 0 0 var(--opt-dot-stroke) var(--opt-accent);
+  }
+
+  /* Station and duration share the leg's first line, so the durations line up
+     with the station names rather than floating beside the smaller detail row. */
+  .leg-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
   }
 
   .leg-station {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: var(--ha-font-size-m, 14px);
+    font-weight: var(--opt-font-weight-medium);
+    line-height: var(--opt-station-line);
   }
 
   .leg-details {
-    font-size: 12px;
-    opacity: 0.7;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
   }
 
-  .leg-details ha-icon {
-    --opt-icon-size: 14px;
+  .leg-details ha-icon,
+  .leg-details openpublictransport-transport-icon {
+    --opt-icon-size: 16px;
   }
 
   .leg-time {
     font-variant-numeric: tabular-nums;
-    font-weight: 500;
+    font-weight: var(--opt-font-weight-medium);
+  }
+
+  .leg-line {
+    font-weight: var(--opt-font-weight-medium);
+  }
+
+  /* The line and where it is headed: one phrase, so the arrow between them sits
+     closer than the gap separating them from the ride's length. */
+  .leg-service {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Where the vehicle is headed. It can be long, so it yields before the
+     duration does. */
+  .leg-direction {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  /* A station's own time sits at the right edge of its line, so the journey's
+     four times read down one column like a timetable. */
+  .leg-departure {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: var(--ha-font-size-m, 14px);
+    font-weight: var(--opt-font-weight-medium);
+    line-height: var(--opt-station-line);
+    color: var(--opt-text);
+  }
+
+  /* The ride's length belongs to the vehicle that does it, so it follows the
+     line and its direction directly rather than being pushed to the far edge:
+     it reads as part of that sentence, and the right edge stays the times'. */
+  .leg-duration {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* When this leg gets in, under the time it left. Set back, because the pair
+     that matters at a change is this arrival and the next leg's departure
+     directly below it — which is what makes the wait between them visible. */
+  .leg-arrival {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--opt-text-secondary);
   }
 
   .leg-transfer-info {
-    font-size: 11px;
-    color: var(--opt-delay-yellow);
-    margin-top: 4px;
-    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--ha-font-size-s, 12px);
+    color: var(--opt-text-secondary);
+    margin-top: 2px;
   }
 
-  /* Alternative journeys */
+  .leg-transfer-info ha-icon {
+    --opt-icon-size: 16px;
+  }
+
+  /* Alternative journeys. No rule above the heading: the heading and the space
+     before it already say a new section starts, and the rows below carry rules
+     of their own — a third line here would compete with both. */
   .alt-journeys {
     margin-top: 16px;
-    border-top: 1px solid var(--opt-border);
-    padding-top: 12px;
   }
 
+  /* The heading belongs to the list under it, so it sits close to it — the air
+     that separates the two goes above the heading, not between them. */
   .alt-journeys-title {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    opacity: 0.6;
-    margin-bottom: 8px;
+    font-size: var(--ha-font-size-m, 14px);
+    font-weight: var(--opt-font-weight-medium);
+    color: var(--opt-text-secondary);
+    margin-bottom: 2px;
   }
 
   .alt-journey {
@@ -522,8 +651,19 @@ export const cardStyles = css`
     align-items: center;
     gap: 12px;
     padding: 6px 0;
-    font-size: 13px;
+    font-size: var(--ha-font-size-s, 12px);
+    font-variant-numeric: tabular-nums;
+    color: var(--opt-text-secondary);
     border-bottom: 1px solid var(--opt-border);
+  }
+
+  .alt-journey .leg-time {
+    color: var(--opt-text);
+  }
+
+  .alt-journey .alt-risk {
+    margin-left: auto;
+    display: inline-flex;
   }
 
   .alt-journey:last-child {
