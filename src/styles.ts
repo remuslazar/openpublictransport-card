@@ -300,8 +300,17 @@ export const cardStyles = css`
     font-variant-numeric: tabular-nums;
   }
 
-  .trip-header .trip-arrow {
+  .trip-arrow {
     color: var(--opt-text-secondary);
+  }
+
+  /* An arrow joins the two things on either side of it, so it keeps their
+     company rather than the row's — in a row's own gap it read as another
+     column separator, with as much air around it as unrelated values have. */
+  .time-span {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
   }
 
   /* The journey's total reads at the same size as the times it belongs to; only
@@ -457,6 +466,16 @@ export const cardStyles = css`
 
   .leg-line {
     font-weight: var(--ha-font-weight-medium, 500);
+  }
+
+  /* The line and where it is headed: one phrase, so the arrow between them sits
+     closer than the gap separating them from the ride's length. */
+  .leg-service {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
   }
 
   /* Where the vehicle is headed. It can be long, so it yields before the

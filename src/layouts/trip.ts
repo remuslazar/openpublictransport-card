@@ -99,9 +99,11 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class="trip-header">
-        <span>${trip.departure}</span>
-        <span class="trip-arrow">&rarr;</span>
-        <span>${trip.arrival}</span>
+        <span class="time-span">
+          <span>${trip.departure}</span>
+          <span class="trip-arrow">&rarr;</span>
+          <span>${trip.arrival}</span>
+        </span>
         <span class="trip-duration">${this._formatDuration(trip.duration_minutes)}</span>
       </div>
     `;
@@ -182,9 +184,18 @@ export class TripLayout extends LitElement {
           <openpublictransport-transport-icon
             transport-type=${leg.transport_type || leg.product}
           ></openpublictransport-transport-icon>
-          ${leg.line ? html`<span class="leg-line">${leg.line}</span>` : nothing}
-          ${leg.direction
-            ? html`<span class="leg-direction">&rarr; ${leg.direction}</span>`
+          ${leg.line || leg.direction
+            ? html`
+                <span class="leg-service">
+                  ${leg.line ? html`<span class="leg-line">${leg.line}</span>` : nothing}
+                  ${leg.direction
+                    ? html`
+                        <span class="trip-arrow">&rarr;</span>
+                        <span class="leg-direction">${leg.direction}</span>
+                      `
+                    : nothing}
+                </span>
+              `
             : nothing}
           ${leg.platform
             ? html`<span>${localize(this.hass.language, "platform")} ${leg.platform}</span>`
@@ -249,9 +260,11 @@ export class TripLayout extends LitElement {
         ${trip.next_journeys.map(
           (alt) => html`
             <div class="alt-journey">
-              <span class="leg-time">${this._formatTime(alt.departure)}</span>
-              <span class="trip-arrow">&rarr;</span>
-              <span class="leg-time">${this._formatTime(alt.arrival)}</span>
+              <span class="time-span">
+                <span class="leg-time">${this._formatTime(alt.departure)}</span>
+                <span class="trip-arrow">&rarr;</span>
+                <span class="leg-time">${this._formatTime(alt.arrival)}</span>
+              </span>
               <span>${this._formatDuration(alt.duration_minutes)}</span>
               <span>${alt.transfers} ${alt.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
               <span class="alt-risk ${this._getRiskClass(alt.transfer_risk)}">
