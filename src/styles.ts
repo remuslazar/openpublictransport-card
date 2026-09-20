@@ -363,11 +363,19 @@ export const cardStyles = css`
        small keeps a visible centre */
     --opt-dot-stroke: 1.5px;
     --opt-station-line: 20px;
-    /* From the text column to the centre of the rail: half the card's inset, so
-       the rail sits midway between the content and the card's left edge. */
-    --opt-rail-offset: 8px;
+    /* Gap between the dots and the text they mark. */
+    --opt-dot-gap: 8px;
+    /* From the legs' text back to the centre of the rail. */
+    --opt-rail-offset: calc(
+      var(--opt-dot-gap) + (var(--opt-dot-size) + 2 * var(--opt-dot-ring)) / 2
+    );
 
     position: relative;
+    /* Indenting the legs by exactly that offset puts the rail on the same
+       column as the header, the facts and the alternatives — it reads as one
+       vertical rule through the card's content — while the dots, being wider
+       than the rule, straddle that column and sit a little into the padding. */
+    padding-left: var(--opt-rail-offset);
   }
 
   .trip-leg {
