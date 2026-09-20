@@ -470,8 +470,16 @@ export const cardStyles = css`
 
   /* A station's own time sits at the right edge of its line, so the journey's
      four times read down one column like a timetable. */
-  .leg-departure {
+  /* The delay and the time it qualifies travel together at the right edge. */
+  .leg-head-time {
     margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .leg-departure {
     flex-shrink: 0;
     font-size: var(--ha-font-size-m, 14px);
     font-weight: var(--ha-font-weight-medium, 500);
@@ -569,26 +577,25 @@ export const cardStyles = css`
     margin: 0 auto 12px;
   }
 
-  /* Delay badge */
+  /* Delay badge. A filled chip made the delay the loudest thing on the card,
+     louder than the journey's own times — and now that a leg reports the time
+     that will actually happen, the delay only explains why that time differs
+     from the timetable. Coloured figures say that quietly enough. */
   .delay-badge {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: var(--ha-font-size-s, 12px);
+    font-weight: var(--ha-font-weight-medium, 500);
+    font-variant-numeric: tabular-nums;
     line-height: 1.4;
   }
 
   .delay-badge.delayed {
-    background: var(--opt-delay-red);
-    color: var(--opt-on-accent);
+    color: var(--opt-delay-red);
   }
 
   .delay-badge.on-time {
-    background: var(--opt-delay-green);
-    color: var(--opt-on-accent);
+    color: var(--opt-delay-green);
   }
 
   /* Editor styles */

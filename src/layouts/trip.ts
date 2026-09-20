@@ -19,6 +19,16 @@ export class TripLayout extends LitElement {
   }
 
   /**
+   * The time a leg will actually happen: the provider's estimate when it has
+   * one, the timetable otherwise. The journey's own header already reports the
+   * estimate, so legs that reported the timetable disagreed with it by exactly
+   * the delay — the card showed 09:42 under a header that said 09:46.
+   */
+  private _realTime(estimated?: string, planned?: string): string {
+    return this._formatTime(estimated || planned || "");
+  }
+
+  /**
    * A duration in the viewer's own language: 83 minutes reads as "1h 23m" in
    * English and "1h, 23 Min." in German, instead of a bare minute count that
    * the reader has to divide by 60.
@@ -146,22 +156,27 @@ export class TripLayout extends LitElement {
        if the next leg leaves the moment this one arrives the number below
        already says it, and the last leg's arrival is the destination's own
        time on the row beneath. What is left is the arrivals that open a wait. */
-    const arrival = this._formatTime(leg.arrival_planned);
-    const showArrival = !!next && !!arrival && arrival !== this._formatTime(next.departure_planned);
+    const arrival = this._realTime(leg.arrival_estimated, leg.arrival_planned);
+    const showArrival =
+      !!next && !!arrival && arrival !== this._realTime(next.departure_estimated, next.departure_planned);
 
     return html`
       <div class=${legClass}>
         <div class="leg-head">
           <div class="leg-station">${leg.origin}</div>
-          ${leg.delay > 0
-            ? html`
-                <openpublictransport-delay-badge
-                  .delay=${leg.delay}
-                  is-realtime
-                ></openpublictransport-delay-badge>
-              `
-            : nothing}
-          <div class="leg-time leg-departure">${this._formatTime(leg.departure_planned)}</div>
+          <div class="leg-head-time">
+            ${leg.delay > 0
+              ? html`
+                  <openpublictransport-delay-badge
+                    .delay=${leg.delay}
+                    is-realtime
+                  ></openpublictransport-delay-badge>
+                `
+              : nothing}
+            <div class="leg-time leg-departure">
+              ${this._realTime(leg.departure_estimated, leg.departure_planned)}
+            </div>
+          </div>
         </div>
         <div class="leg-details">
           <openpublictransport-transport-icon
@@ -211,7 +226,11 @@ export class TripLayout extends LitElement {
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
                 <div class="leg-head">
                   <div class="leg-station">${lastLeg.destination}</div>
-                  <div class="leg-time leg-departure">${this._formatTime(lastLeg.arrival_planned)}</div>
+                  <div class="leg-head-time">
+                    <div class="leg-time leg-departure">
+                      ${this._realTime(lastLeg.arrival_estimated, lastLeg.arrival_planned)}
+                    </div>
+                  </div>
                 </div>
               </div>
             `
