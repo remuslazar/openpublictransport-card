@@ -76,11 +76,20 @@ export const cardStyles = css`
     flex-shrink: 0;
   }
 
-  /* Icon sizing fallback: keeps legacy mdc variable and explicit dimensions in sync. */
+  /* Icon sizing fallback: keeps legacy mdc variable and explicit dimensions in sync.
+     The flex box is not cosmetic: an ha-icon holds an inline-flex ha-svg-icon,
+     so as a block it puts that child on a text baseline and the glyph lands
+     about 2px below the middle of the icon's own box — enough to read as
+     misaligned beside a label. Laying the child out as a flex item centres the
+     glyph in its box, which is what makes Home Assistant's own headings line
+     up, and removes any need to nudge icons by hand. */
   ha-icon {
     --mdc-icon-size: var(--opt-icon-size, 24px);
     width: var(--opt-icon-size, 24px);
     height: var(--opt-icon-size, 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .card-header {
@@ -245,15 +254,20 @@ export const cardStyles = css`
     cursor: help;
   }
 
-  /* Compact layout */
+  /* Compact layout. The chips start on Home Assistant's 16px inset, where the
+     header's text starts. */
   .compact-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 12px;
+    padding: 12px 16px;
   }
 
+  /* The icon is a transport-icon element, not an ha-icon, so it is sized by
+     the variable it reads: the ha-icon rule this replaces never matched, and
+     the chips drew ha-icon's 24px default. */
   .compact-chip {
+    --opt-icon-size: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -288,10 +302,6 @@ export const cardStyles = css`
   .compact-chip .chip-countdown {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-  }
-
-  .compact-chip ha-icon {
-    --opt-icon-size: 18px;
   }
 
   /* Trip layout */
