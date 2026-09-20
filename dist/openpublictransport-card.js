@@ -393,8 +393,11 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
      dots and the text keep their relationship whatever those sizes become. */
   .trip-timeline {
     --opt-line-width: 2px;
-    --opt-dot-size: 8px;
+    --opt-dot-size: 6px;
     --opt-dot-ring: 2px;
+    /* the hollow marker's stroke: thinner than the outer ring, so a dot this
+       small keeps a visible centre */
+    --opt-dot-stroke: 1.5px;
     --opt-station-line: 20px;
     /* From the text column to the centre of the rail: half the card's inset, so
        the rail sits midway between the content and the card's left edge. */
@@ -445,7 +448,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   /* A transfer is a hollow dot: a change of vehicle, not another colour. */
   .trip-leg.transfer::before {
     background: var(--opt-bg);
-    box-shadow: inset 0 0 0 var(--opt-dot-ring) var(--opt-accent);
+    box-shadow: inset 0 0 0 var(--opt-dot-stroke) var(--opt-accent);
   }
 
   /* Station and duration share the leg's first line, so the durations line up
