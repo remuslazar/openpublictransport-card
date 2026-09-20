@@ -284,10 +284,10 @@ export const cardStyles = css`
 
   /* Trip layout */
   .trip-container {
-    /* The wider left inset is the timeline's gutter: the rail and its dots live
-       in it, so the header, the facts, every leg and the alternatives all start
-       on the same column instead of three. */
-    padding: 16px 16px 16px 30px;
+    /* The card's content keeps Home Assistant's own 16px inset, so it starts on
+       the same column as every other card on the dashboard. The timeline's rail
+       and dots live inside that inset rather than pushing the content right. */
+    padding: 16px;
   }
 
   .trip-header {
@@ -360,8 +360,9 @@ export const cardStyles = css`
     --opt-dot-size: 8px;
     --opt-dot-ring: 2px;
     --opt-station-line: 20px;
-    /* from the text column to the centre of the rail */
-    --opt-rail-offset: 14px;
+    /* From the text column to the centre of the rail: half the card's inset, so
+       the rail sits midway between the content and the card's left edge. */
+    --opt-rail-offset: 8px;
 
     position: relative;
   }
