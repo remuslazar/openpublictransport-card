@@ -318,9 +318,9 @@ export const cardStyles = css`
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 2px 14px;
+    gap: 2px 12px;
     margin-bottom: 12px;
-    font-size: var(--ha-font-size-m, 14px);
+    font-size: var(--ha-font-size-s, 12px);
     color: var(--opt-text-secondary);
   }
 
@@ -332,7 +332,7 @@ export const cardStyles = css`
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 18px;
+    --opt-icon-size: 16px;
     color: var(--opt-text-secondary);
   }
 

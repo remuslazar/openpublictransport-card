@@ -106,9 +106,10 @@ export class TripLayout extends LitElement {
     const minTransferValue = this._formatDuration(trip.min_transfer_time);
     const minTransfer = `${localize(lang, "min_transfer")} ${minTransferValue}`;
 
-    /* Each fact says what it is. The icons alone were shorter, but a tooltip is
-       the only place the wording lived — and nobody hovers a wall display, so
-       the risk state in particular was carried by its colour alone. */
+    /* A fact gets words where its value cannot speak for itself: a bare count
+       and a risk state mean nothing without them, and a tooltip is no help on a
+       wall display, where nobody hovers. The wait is the exception — a duration
+       beside a timer, on a line that has already said "transfer" once. */
     return html`
       <div class="trip-meta">
         <div class="trip-meta-item" title=${transfers}>
@@ -123,7 +124,7 @@ export class TripLayout extends LitElement {
           ? html`
               <div class="trip-meta-item" title=${minTransfer}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>${minTransfer}</span>
+                <span>${minTransferValue}</span>
               </div>
             `
           : nothing}

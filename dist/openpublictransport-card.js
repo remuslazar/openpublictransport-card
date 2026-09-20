@@ -354,9 +354,9 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 2px 14px;
+    gap: 2px 12px;
     margin-bottom: 12px;
-    font-size: var(--ha-font-size-m, 14px);
+    font-size: var(--ha-font-size-s, 12px);
     color: var(--opt-text-secondary);
   }
 
@@ -368,7 +368,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   }
 
   .trip-meta-item ha-icon {
-    --opt-icon-size: 18px;
+    --opt-icon-size: 16px;
     color: var(--opt-text-secondary);
   }
 
@@ -790,7 +790,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
         ${t.min_transfer_time>0?B`
               <div class="trip-meta-item" title=${a}>
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
-                <span>${a}</span>
+                <span>${r}</span>
               </div>
             `:W}
         ${t.connection_feasible?W:B`
