@@ -613,25 +613,30 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     margin: 0 auto 12px;
   }
 
-  /* Delay badge. A filled chip made the delay the loudest thing on the card,
-     louder than the journey's own times — and now that a leg reports the time
-     that will actually happen, the delay only explains why that time differs
-     from the timetable. Coloured figures say that quietly enough. */
+  /* Delay badge. A filled chip reads at a glance, which is what a delay wants —
+     but at its old size it outweighed the journey's own times. Now that a leg
+     reports the time that will actually happen, the badge only explains why
+     that time differs from the timetable, so it is sized as the annotation it
+     is rather than as a headline. */
   .delay-badge {
     display: inline-flex;
     align-items: center;
-    font-size: var(--ha-font-size-s, 12px);
+    padding: 0 4px;
+    border-radius: 4px;
+    font-size: var(--ha-font-size-xs, 10px);
     font-weight: var(--ha-font-weight-medium, 500);
     font-variant-numeric: tabular-nums;
-    line-height: 1.4;
+    line-height: 1.6;
   }
 
   .delay-badge.delayed {
-    color: var(--opt-delay-red);
+    background: var(--opt-delay-red);
+    color: var(--opt-on-accent);
   }
 
   .delay-badge.on-time {
-    color: var(--opt-delay-green);
+    background: var(--opt-delay-green);
+    color: var(--opt-on-accent);
   }
 
   /* Editor styles */
