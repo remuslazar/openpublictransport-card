@@ -61,6 +61,12 @@ export interface CardConfig {
   show_platform: boolean;
   show_delay: boolean;
   show_realtime_indicator: boolean;
+  /**
+   * The card's look. `dark` and `light` are the departure board, gold on
+   * black or ink on white, in a monospace face; `auto` picks one of the two by
+   * the dashboard's mode. `ha` takes colours and type from the Home Assistant
+   * theme instead, so the card looks like the dashboard around it.
+   */
   theme: "dark" | "light" | "auto" | "ha";
   line_filter?: string;
   destination_filter?: string;

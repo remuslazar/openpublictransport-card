@@ -1,60 +1,128 @@
 import { css } from "lit";
 
-export const cardStyles = css`
+/**
+ * Rules for the card element alone: its palettes, one per `theme`. The card
+ * carries the resolved theme as `data-theme` ("auto" resolves to "dark" or
+ * "light" by the dashboard's mode), and the palettes set the --opt-* variables
+ * there.
+ *
+ * They are kept out of cardStyles, which every layout and badge shares. Each of
+ * those has its own shadow root, and a palette declared in the shared sheet was
+ * declared again on every one of them — where no data-theme exists — so
+ * everything inside a layout was painted from the base block whatever the
+ * theme said. Declared once, on the card, the variables inherit into every
+ * shadow root below it.
+ */
+export const hostStyles = css`
+  /* theme: ha, and the palette before a theme is applied. Everything is taken
+     from the Home Assistant palette and type, so the card follows the
+     dashboard's theme — light, dark or custom — instead of carrying colours of
+     its own. */
   :host {
-    --opt-bg: var(--ha-card-background, var(--card-background-color, #1a1a1a));
-    --opt-text: var(--primary-text-color, #ffd700);
-    --opt-text-secondary: var(--secondary-text-color, #cccccc);
-    --opt-delay-red: #e53935;
-    --opt-delay-green: #43a047;
-    --opt-delay-yellow: #fdd835;
-    --opt-border: var(--divider-color, rgba(255, 255, 255, 0.12));
-    --opt-header-bg: rgba(0, 0, 0, 0.2);
-    --opt-row-hover: rgba(255, 255, 255, 0.05);
-    --opt-accent: var(--accent-color, #ffd700);
-
-    height: 100%;
+    --opt-bg: var(--ha-card-background, var(--card-background-color));
+    --opt-text: var(--primary-text-color);
+    --opt-text-secondary: var(--secondary-text-color);
+    --opt-border: var(--divider-color);
+    --opt-accent: var(--primary-color);
+    /* Readable text on top of an accent-coloured surface (line badges). */
+    --opt-on-accent: var(--text-primary-color);
+    --opt-delay-red: var(--error-color);
+    --opt-delay-green: var(--success-color);
+    --opt-delay-yellow: var(--warning-color);
+    /* Readable text on top of the delay colours (delay badges, the banner). */
+    --opt-on-delay: var(--text-primary-color);
+    /* Home Assistant's own heading: no band and no rule, no capitals, and the
+       size and weight of its heading card's title. The entities card's 24px
+       title outweighs a departure list below it. */
+    --opt-header-bg: transparent;
+    --opt-header-rule: transparent;
+    --opt-header-font-size: var(--ha-font-size-l, 16px);
+    --opt-header-font-weight: var(--ha-font-weight-normal, 400);
+    --opt-header-line-height: var(--ha-line-height-normal, 1.6);
+    /* Labels (column headings, the station line) in sentence case, untracked. */
+    --opt-caps: none;
+    --opt-tracking: 0;
+    /* Small text on Home Assistant's scale: labels, countdowns, chips, badges. */
+    --opt-font-size-label: var(--ha-font-size-s, 12px);
+    --opt-font-size-badge: var(--ha-font-size-s, 12px);
+    --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
+    --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
+    --opt-font-weight-medium: var(--ha-font-weight-medium, 500);
   }
 
-  /* Dark theme */
+  /* The departure board: gold on black, in a monospace face. */
   :host([data-theme="dark"]) {
     --opt-bg: #0a0a0a;
     --opt-text: #ffd700;
     --opt-text-secondary: #cccccc;
-    --opt-header-bg: rgba(0, 0, 0, 0.4);
-    --opt-row-hover: rgba(255, 215, 0, 0.05);
     --opt-border: rgba(255, 215, 0, 0.15);
+    --opt-accent: var(--accent-color, #ffd700);
+    --opt-on-accent: #000000;
+    --opt-delay-red: #e53935;
+    --opt-delay-green: #43a047;
+    --opt-delay-yellow: #fdd835;
+    /* Black, not white: white on this red measures 4.2:1 and on this green
+       3.3:1, below the 4.5:1 a badge's small figures need. The red itself stays,
+       since it is also text on the black card, where it measures 4.7:1. */
+    --opt-on-delay: #000000;
+    /* The board's header: a band under a rule, in tracked capitals. */
+    --opt-header-bg: rgba(0, 0, 0, 0.4);
+    --opt-header-rule: var(--opt-border);
+    --opt-header-font-size: 14px;
+    --opt-header-font-weight: 700;
+    --opt-header-line-height: normal;
+    --opt-caps: uppercase;
+    --opt-tracking: 1;
+    --opt-font-size-label: 11px;
+    --opt-font-size-badge: 13px;
+    --opt-row-hover: rgba(255, 215, 0, 0.05);
+    --opt-font-family: "Roboto Mono", "Courier New", monospace;
+    /* The faces this falls back to — Courier New, DejaVu Sans Mono — have no
+       medium, so 500 would drop to regular and a station name would lose the
+       bold it has always had here. */
+    --opt-font-weight-medium: 600;
   }
 
-  /* Light theme */
+  /* The same board on white. */
   :host([data-theme="light"]) {
     --opt-bg: #ffffff;
     --opt-text: #1a1a1a;
     --opt-text-secondary: #666666;
-    --opt-header-bg: #f5f5f5;
-    --opt-row-hover: rgba(0, 0, 0, 0.03);
     --opt-border: rgba(0, 0, 0, 0.12);
+    --opt-accent: var(--accent-color, #ffd700);
+    --opt-on-accent: #000000;
+    /* A shade darker than the dark board's red and green, which measure 4.2:1
+       and 3.3:1 against white text and white paper; these measure 5.0:1 and
+       5.1:1. */
+    --opt-delay-red: #d32f2f;
+    --opt-delay-green: #2e7d32;
+    --opt-delay-yellow: #fdd835;
+    --opt-on-delay: #ffffff;
+    --opt-header-bg: #f5f5f5;
+    --opt-header-rule: var(--opt-border);
+    --opt-header-font-size: 14px;
+    --opt-header-font-weight: 700;
+    --opt-header-line-height: normal;
+    --opt-caps: uppercase;
+    --opt-tracking: 1;
+    --opt-font-size-label: 11px;
+    --opt-font-size-badge: 13px;
+    --opt-row-hover: rgba(0, 0, 0, 0.03);
+    --opt-font-family: "Roboto Mono", "Courier New", monospace;
+    --opt-font-weight-medium: 600;
   }
+`;
 
-  /* Native Home Assistant theme — blend into the active dashboard theme */
-  :host([data-theme="ha"]) {
-    --opt-bg: var(--ha-card-background, var(--card-background-color, #fff));
-    --opt-text: var(--primary-text-color);
-    --opt-text-secondary: var(--secondary-text-color);
-    --opt-border: var(--divider-color);
-    --opt-header-bg: var(--secondary-background-color);
-    --opt-row-hover: var(--secondary-background-color);
-    --opt-accent: var(--primary-color, var(--accent-color));
-    --opt-delay-red: var(--error-color, #e53935);
-    --opt-delay-green: var(--success-color, #43a047);
-    --opt-delay-yellow: var(--warning-color, #fdd835);
+export const cardStyles = css`
+  :host {
+    display: block;
   }
 
   ha-card {
     background: var(--opt-bg);
     color: var(--opt-text);
     overflow: hidden;
-    font-family: "Roboto Mono", "Courier New", monospace;
+    font-family: var(--opt-font-family);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -92,17 +160,21 @@ export const cardStyles = css`
     justify-content: center;
   }
 
+  /* The header is the one place the themes part ways in shape rather than
+     colour: the board's band of tracked capitals under a rule, or Home
+     Assistant's own heading. Each theme's palette says which. */
   .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     padding: 12px 16px;
     background: var(--opt-header-bg);
-    border-bottom: 1px solid var(--opt-border);
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    border-bottom: 1px solid var(--opt-header-rule);
+    font-size: var(--opt-header-font-size);
+    font-weight: var(--opt-header-font-weight);
+    line-height: var(--opt-header-line-height);
+    text-transform: var(--opt-caps);
+    letter-spacing: calc(var(--opt-tracking) * 1px);
   }
 
   .card-header .station-name {
@@ -112,7 +184,10 @@ export const cardStyles = css`
     white-space: nowrap;
   }
 
+  /* The clock is secondary to the station, and keeps the body size under a
+     title that is larger than it. */
   .card-header .current-time {
+    font-size: var(--ha-font-size-m, 14px);
     font-variant-numeric: tabular-nums;
     opacity: 0.8;
     margin-left: 12px;
@@ -130,9 +205,9 @@ export const cardStyles = css`
   /* Disruption banner */
   .disruption-banner {
     background: var(--opt-delay-red);
-    color: #ffffff;
+    color: var(--opt-on-delay);
     padding: 8px 16px;
-    font-size: 12px;
+    font-size: var(--ha-font-size-s, 12px);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -151,10 +226,10 @@ export const cardStyles = css`
   .departure-table thead th {
     padding: 8px 12px;
     text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: var(--opt-font-size-label);
+    font-weight: var(--opt-font-weight-medium);
+    text-transform: var(--opt-caps);
+    letter-spacing: calc(var(--opt-tracking) * 0.5px);
     color: var(--opt-text-secondary);
     /* keep the header row pinned at the top of the scrolling list */
     position: sticky;
@@ -180,7 +255,7 @@ export const cardStyles = css`
 
   .departure-table td {
     padding: 10px 12px;
-    font-size: 14px;
+    font-size: var(--ha-font-size-m, 14px);
     vertical-align: middle;
   }
 
@@ -191,12 +266,12 @@ export const cardStyles = css`
   }
 
   .time-planned {
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
   }
 
   .time-countdown {
     display: block;
-    font-size: 11px;
+    font-size: var(--opt-font-size-label);
     opacity: 0.7;
     margin-top: 2px;
   }
@@ -216,9 +291,9 @@ export const cardStyles = css`
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: var(--opt-font-size-badge);
     background: var(--opt-accent);
-    color: #000000;
+    color: var(--opt-on-accent);
   }
 
   /* Destination */
@@ -233,7 +308,7 @@ export const cardStyles = css`
   /* Platform */
   .platform-cell {
     text-align: center;
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
   }
 
   .platform-changed {
@@ -275,7 +350,7 @@ export const cardStyles = css`
     border-radius: 8px;
     border: 2px solid var(--opt-border);
     background: var(--opt-bg);
-    font-size: 13px;
+    font-size: var(--opt-font-size-badge);
     transition: border-color 0.2s ease;
   }
 
@@ -300,7 +375,7 @@ export const cardStyles = css`
   }
 
   .compact-chip .chip-countdown {
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
     font-variant-numeric: tabular-nums;
   }
 
@@ -460,7 +535,7 @@ export const cardStyles = css`
   .card-empty {
     padding: 24px 16px;
     text-align: center;
-    font-size: 14px;
+    font-size: var(--ha-font-size-m, 14px);
     opacity: 0.7;
   }
 
@@ -488,12 +563,12 @@ export const cardStyles = css`
 
   .delay-badge.delayed {
     background: var(--opt-delay-red);
-    color: #ffffff;
+    color: var(--opt-on-delay);
   }
 
   .delay-badge.on-time {
     background: var(--opt-delay-green);
-    color: #ffffff;
+    color: var(--opt-on-delay);
   }
 
   /* Editor styles */

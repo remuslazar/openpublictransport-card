@@ -1,6 +1,6 @@
 import { LitElement, html, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { cardStyles } from "./styles";
+import { cardStyles, hostStyles } from "./styles";
 import { CardConfig, Departure, TripData, HomeAssistant } from "./types";
 import { CARD_VERSION, DEFAULT_CONFIG } from "./const";
 import { localize } from "./localize";
@@ -20,7 +20,7 @@ console.info(
 
 @customElement("openpublictransport-card")
 export class OpenpublictransportCard extends LitElement {
-  static styles = cardStyles;
+  static styles = [hostStyles, cardStyles];
 
   @property({ attribute: false }) hass!: HomeAssistant;
   @state() private _config!: CardConfig;
