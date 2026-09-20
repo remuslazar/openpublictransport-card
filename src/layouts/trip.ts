@@ -186,8 +186,17 @@ export class TripLayout extends LitElement {
     `;
   }
 
-  private _renderLeg(leg: TripLeg, next?: TripLeg) {
-    const legClass = leg.transfer ? "trip-leg transfer" : "trip-leg";
+  private _renderLeg(leg: TripLeg, next?: TripLeg, prev?: TripLeg) {
+    /* The dot marks where this leg *starts*, so it is a change of vehicle when
+       the leg before it ended in one. `transfer` and `transfer_minutes`
+       describe the change out of the leg that carries them, which is the change
+       into this one — reading them off this leg put the marker one station
+       early, on the platform the traveller had just left rather than the one
+       they change at. An access walk carries neither, so a journey that begins
+       on foot does not mark its first stop. */
+    const isChange =
+      !!prev && (!!prev.transfer || typeof prev.transfer_minutes === "number");
+    const legClass = isChange ? "trip-leg transfer" : "trip-leg";
     /* When this leg gets in, shown only where it tells the reader something:
        if the next leg leaves the moment this one arrives the number below
        already says it, and the last leg's arrival is the destination's own
@@ -265,7 +274,7 @@ export class TripLayout extends LitElement {
 
     return html`
       <div class="trip-timeline">
-        ${trip.legs.map((leg, i) => this._renderLeg(leg, trip.legs[i + 1]))}
+        ${trip.legs.map((leg, i) => this._renderLeg(leg, trip.legs[i + 1], trip.legs[i - 1]))}
         ${lastLeg
           ? html`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">

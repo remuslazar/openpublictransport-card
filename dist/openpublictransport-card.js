@@ -998,8 +998,8 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
               </div>
             `}
       </div>
-    `}_renderLeg(t,e){const i=t.transfer?"trip-leg transfer":"trip-leg",a=this._realTime(t.arrival_estimated,t.arrival_planned),n=!!e&&!!a&&a!==this._realTime(e.departure_estimated,e.departure_planned);return B`
-      <div class=${i}>
+    `}_renderLeg(t,e,i){const a=!(!i||!i.transfer&&"number"!=typeof i.transfer_minutes)?"trip-leg transfer":"trip-leg",n=this._realTime(t.arrival_estimated,t.arrival_planned),r=!!e&&!!n&&n!==this._realTime(e.departure_estimated,e.departure_planned);return B`
+      <div class=${a}>
         <div class="leg-head">
           <div class="leg-station">${t.origin}</div>
           <div class="leg-head-time">
@@ -1029,7 +1029,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
               `:W}
           ${t.platform?B`<span>${vt(this.hass.language,"platform")} ${t.platform}</span>`:W}
           <span class="leg-duration">${this._formatDuration(t.duration_minutes)}</span>
-          ${n?B`<span class="leg-arrival">${a}</span>`:W}
+          ${r?B`<span class="leg-arrival">${n}</span>`:W}
         </div>
         ${this._renderTransferNote(t)}
       </div>
@@ -1040,7 +1040,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       </div>
     `}_renderTimeline(t){const e=t.legs[t.legs.length-1];return B`
       <div class="trip-timeline">
-        ${t.legs.map((e,i)=>this._renderLeg(e,t.legs[i+1]))}
+        ${t.legs.map((e,i)=>this._renderLeg(e,t.legs[i+1],t.legs[i-1]))}
         ${e?B`
               <div class="trip-leg" style="border-left-color: transparent; padding-bottom: 0;">
                 <div class="leg-head">
