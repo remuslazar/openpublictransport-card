@@ -510,11 +510,11 @@ export const cardStyles = css`
     --opt-icon-size: 16px;
   }
 
-  /* Alternative journeys */
+  /* Alternative journeys. No rule above the heading: the heading and the space
+     before it already say a new section starts, and the rows below carry rules
+     of their own — a third line here would compete with both. */
   .alt-journeys {
     margin-top: 16px;
-    border-top: 1px solid var(--opt-border);
-    padding-top: 12px;
   }
 
   /* The heading belongs to the list under it, so it sits close to it — the air
