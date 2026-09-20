@@ -143,6 +143,7 @@ export class OpenpublictransportCard extends LitElement {
       departure: attrs["departure"] as string,
       arrival: attrs["arrival"] as string,
       departure_timestamp: attrs["departure_timestamp"] as string | null | undefined,
+      arrival_timestamp: attrs["arrival_timestamp"] as string | null | undefined,
       in_minutes: attrs["in_minutes"] as number | null | undefined,
       destination: attrs["destination"] as string | undefined,
       duration_minutes: attrs["duration_minutes"] as number,

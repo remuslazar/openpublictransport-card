@@ -263,14 +263,27 @@ export const cardStyles = css`
     vertical-align: middle;
   }
 
-  /* Time column */
+  /* Time column: the time that will actually happen, the delay that explains
+     it, and the countdown under both. */
   .time-cell {
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
 
-  .time-planned {
+  .time-departure {
     font-weight: var(--opt-font-weight-medium);
+  }
+
+  /* A time and the delay badge beside it, the badge centred on the time. Set on
+     the time's baseline, the badge's figures lined up but its pill did not:
+     they carry no descenders, so the pill's leading and descent all hang below
+     them — 4.4px under the time's digits against 1.4px above. Centring the two
+     boxes puts the pill's middle on the digits' middle, within 0.3px, in
+     whatever face the theme draws them. */
+  .time-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .time-countdown {
@@ -590,8 +603,26 @@ export const cardStyles = css`
 
   /* A station's own time sits at the right edge of its line, so the journey's
      four times read down one column like a timetable. */
-  .leg-departure {
+  /* The delay and the time it qualifies travel together at the right edge. */
+  .leg-head-time {
     margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* The badge's figures carry no descenders, so its ink rides high inside the
+     pill and the pill hangs below the digits it annotates — measured, 4.1px
+     under them against 1.7px above. No box alignment fixes that: the asymmetry
+     is inside the pill, not in how it is placed, and reshaping the box moves
+     both of its edges equally while the figures stay put. Two pixels up brings
+     the two sets of figures onto the same optical line. */
+  .leg-head-time openpublictransport-delay-badge {
+    transform: translateY(-2px);
+  }
+
+  .leg-departure {
     flex-shrink: 0;
     font-size: var(--ha-font-size-m, 14px);
     font-weight: var(--opt-font-weight-medium);
@@ -689,16 +720,20 @@ export const cardStyles = css`
     margin: 0 auto 12px;
   }
 
-  /* Delay badge */
+  /* Delay badge. A filled chip reads at a glance, which is what a delay wants —
+     but at its old size it outweighed the journey's own times. Now that a leg
+     reports the time that will actually happen, the badge only explains why
+     that time differs from the timetable, so it is sized as the annotation it
+     is rather than as a headline. */
   .delay-badge {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.4;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-size: var(--ha-font-size-xs, 10px);
+    font-weight: var(--opt-font-weight-medium);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.6;
   }
 
   .delay-badge.delayed {

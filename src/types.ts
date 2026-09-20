@@ -48,10 +48,14 @@ export interface TripData {
   // ISO timestamp of the journey start — the walk to the stop, when there is
   // one. Absent on integrations older than 2026.8.2.
   departure_timestamp?: string | null;
+  // ISO timestamp of the journey's end, sent alongside the start.
+  arrival_timestamp?: string | null;
   // Minutes until that start, as the sensor last computed it.
   in_minutes?: number | null;
   // Where the trip ends, e.g. "Reinoldikirche, Dortmund".
   destination?: string;
+  // The provider's own total, which is not always arrival minus departure —
+  // the trip layout shows the span instead and uses this only without it.
   duration_minutes: number;
   transfers: number;
   connection_feasible: boolean;

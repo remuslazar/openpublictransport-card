@@ -157,13 +157,15 @@ export class NextLayout extends LitElement {
 
         <div class="next-bottom">
           <span class=${countdownClass}>${this._renderCountdown(mins)}</span>
-          <span class="next-time">${dep.planned_time}</span>
-          ${this.config.show_delay
-            ? html`<openpublictransport-delay-badge
-                .delay=${dep.delay}
-                ?is-realtime=${dep.is_realtime}
-              ></openpublictransport-delay-badge>`
-            : nothing}
+          <span class="time-line">
+            <span class="next-time">${dep.departure_time || dep.planned_time}</span>
+            ${this.config.show_delay
+              ? html`<openpublictransport-delay-badge
+                  .delay=${dep.delay}
+                  ?is-realtime=${dep.is_realtime}
+                ></openpublictransport-delay-badge>`
+              : nothing}
+          </span>
           ${this.config.show_platform && dep.platform
             ? html`<span class="next-platform">${localize(lang, "platform")} ${dep.platform}</span>`
             : nothing}
