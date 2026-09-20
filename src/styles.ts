@@ -517,11 +517,13 @@ export const cardStyles = css`
     padding-top: 12px;
   }
 
+  /* The heading belongs to the list under it, so it sits close to it — the air
+     that separates the two goes above the heading, not between them. */
   .alt-journeys-title {
     font-size: var(--ha-font-size-m, 14px);
     font-weight: var(--ha-font-weight-medium, 500);
     color: var(--opt-text-secondary);
-    margin-bottom: 8px;
+    margin-bottom: 2px;
   }
 
   .alt-journey {
