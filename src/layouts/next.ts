@@ -163,6 +163,7 @@ export class NextLayout extends LitElement {
               ? html`<openpublictransport-delay-badge
                   .delay=${dep.delay}
                   ?is-realtime=${dep.is_realtime}
+                  .language=${lang}
                 ></openpublictransport-delay-badge>`
               : nothing}
           </span>
