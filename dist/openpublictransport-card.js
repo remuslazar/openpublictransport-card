@@ -400,7 +400,7 @@ const pt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     --opt-dot-stroke: 1.5px;
     --opt-station-line: 20px;
     /* Gap between the dots and the text they mark. */
-    --opt-dot-gap: 8px;
+    --opt-dot-gap: 5px;
     /* From the legs' text back to the centre of the rail. */
     --opt-rail-offset: calc(
       var(--opt-dot-gap) + (var(--opt-dot-size) + 2 * var(--opt-dot-ring)) / 2
