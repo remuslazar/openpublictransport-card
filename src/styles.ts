@@ -38,11 +38,8 @@ export const hostStyles = css`
     --opt-delay-red: var(--error-color);
     --opt-delay-green: var(--success-color);
     --opt-delay-yellow: var(--warning-color);
-    /* Black figures on the status colours, as on the dark board: white measures
-       4.3:1 on Home Assistant's error colour and 3.3:1 on its success colour,
-       black 4.9:1 and 6.4:1. The colours stay Home Assistant's own, the same on
-       a light and a dark theme. */
-    --opt-on-delay: #000000;
+    /* Readable text on top of the delay colours (delay badges, the banner). */
+    --opt-on-delay: var(--text-primary-color);
     /* Home Assistant's own heading: no band and no rule, no capitals, and the
        size and weight of its heading card's title. The entities card's 24px
        title outweighs a departure list below it. */
