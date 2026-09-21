@@ -33,27 +33,16 @@ export const hostStyles = css`
     --opt-text-secondary: var(--secondary-text-color);
     --opt-border: var(--divider-color);
     --opt-accent: var(--primary-color);
-    /* The line badge is a tint of the primary colour carrying the body text,
-       the way Home Assistant tints a tile's icon, rather than a solid primary
-       under white: white on --primary-color measures 3.3:1. The tint keeps the
-       text's own contrast on any theme — 14.7:1 on the default light one, 10:1
-       on the dark. */
-    --opt-line-bg: color-mix(in srgb, var(--primary-color) 20%, transparent);
-    /* Readable text on top of the line badge. */
-    --opt-on-accent: var(--primary-text-color);
-    /* The status colours a quarter of the way toward the text colour: darker on
-       a light theme, lighter on a dark one. As they come, --error-color measures
-       4.3:1 as text on a white card and 4.0:1 on the dark one, and 4.3:1 under
-       white figures; --success-color 3.3:1 under white figures; and
-       --warning-color 2.0:1 as an icon on white. Mixed, red measures 6.4:1 and
-       5.2:1 both ways, green 5.0:1 and 6.5:1, amber 3.2:1 and 9.4:1. */
-    --opt-delay-red: color-mix(in srgb, var(--error-color) 75%, var(--primary-text-color));
-    --opt-delay-green: color-mix(in srgb, var(--success-color) 75%, var(--primary-text-color));
-    --opt-delay-yellow: color-mix(in srgb, var(--warning-color) 75%, var(--primary-text-color));
-    /* Figures on the status colours take the card's own colour — white on a
-       light theme, the dark card on a dark one — since the mix above moves the
-       colour away from exactly that. */
-    --opt-on-delay: var(--opt-bg);
+    /* Readable text on top of an accent-coloured surface (line badges). */
+    --opt-on-accent: var(--text-primary-color);
+    --opt-delay-red: var(--error-color);
+    --opt-delay-green: var(--success-color);
+    --opt-delay-yellow: var(--warning-color);
+    /* Black figures on the status colours, as on the dark board: white measures
+       4.3:1 on Home Assistant's error colour and 3.3:1 on its success colour,
+       black 4.9:1 and 6.4:1. The colours stay Home Assistant's own, the same on
+       a light and a dark theme. */
+    --opt-on-delay: #000000;
     /* Home Assistant's own heading: no band and no rule, no capitals, and the
        size and weight of its heading card's title. The entities card's 24px
        title outweighs a departure list below it. */
@@ -80,7 +69,6 @@ export const hostStyles = css`
     --opt-text-secondary: #cccccc;
     --opt-border: rgba(255, 215, 0, 0.15);
     --opt-accent: var(--accent-color, #ffd700);
-    --opt-line-bg: var(--opt-accent);
     --opt-on-accent: #000000;
     --opt-delay-red: #e53935;
     --opt-delay-green: #43a047;
@@ -114,7 +102,6 @@ export const hostStyles = css`
     --opt-text-secondary: #666666;
     --opt-border: rgba(0, 0, 0, 0.12);
     --opt-accent: var(--accent-color, #ffd700);
-    --opt-line-bg: var(--opt-accent);
     --opt-on-accent: #000000;
     /* A shade darker than the dark board's red and green, which measure 4.2:1
        and 3.3:1 against white text and white paper; these measure 5.0:1 and
@@ -372,7 +359,7 @@ export const cardStyles = css`
     border-radius: 4px;
     font-weight: 700;
     font-size: var(--opt-font-size-badge);
-    background: var(--opt-line-bg);
+    background: var(--opt-accent);
     color: var(--opt-on-accent);
   }
 

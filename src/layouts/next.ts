@@ -55,7 +55,7 @@ export class NextLayout extends LitElement {
       .next-line-badge {
         font-size: var(--ha-font-size-m, 14px);
         font-weight: 700;
-        background: var(--opt-line-bg);
+        background: var(--opt-accent);
         color: var(--opt-on-accent);
         padding: 3px 8px;
         border-radius: 4px;
