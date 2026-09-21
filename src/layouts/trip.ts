@@ -70,6 +70,27 @@ export class TripLayout extends LitElement {
     return hours ? `${hours} h ${mins} min` : `${mins} min`;
   }
 
+  /**
+   * How long a journey takes, as the two times beside the total say: arrival
+   * minus departure. The integration's `duration_minutes` is not that span.
+   * For EFA it adds up the legs' own durations, so the waits at the changes
+   * drop out — a journey from 13:27 to 14:17 read 35 minutes instead of 50 —
+   * and for OTP it is the itinerary's, which counts the walk to the first stop
+   * that the departure shown leaves out.
+   *
+   * Both timestamps are cut to the minute first, as the HH:MM shown is, so a
+   * journey leaving at 13:36:30 and arriving at 14:33 reads 57, not 56. They
+   * are full timestamps, so a journey past midnight needs no special case. The
+   * integration's figure is used only when a timestamp is missing or cannot be
+   * read.
+   */
+  private _journeyMinutes(journey: TripData): number {
+    const departure = Date.parse(journey.departure_timestamp || "");
+    const arrival = Date.parse(journey.arrival_timestamp || "");
+    if (Number.isNaN(departure) || Number.isNaN(arrival)) return journey.duration_minutes;
+    return Math.floor(arrival / 60000) - Math.floor(departure / 60000);
+  }
+
   private _getRiskClass(risk: string): string {
     switch (risk.toLowerCase()) {
       case "low":
@@ -117,7 +138,7 @@ export class TripLayout extends LitElement {
           <span class="trip-arrow">${ARROW}</span>
           <span>${trip.arrival}</span>
         </span>
-        <span class="trip-duration">${this._formatDuration(trip.duration_minutes)}</span>
+        <span class="trip-duration">${this._formatDuration(this._journeyMinutes(trip))}</span>
       </div>
     `;
   }
@@ -287,7 +308,7 @@ export class TripLayout extends LitElement {
                 <span class="trip-arrow">${ARROW}</span>
                 <span class="leg-time">${this._formatTime(alt.arrival)}</span>
               </span>
-              <span>${this._formatDuration(alt.duration_minutes)}</span>
+              <span>${this._formatDuration(this._journeyMinutes(alt))}</span>
               <span>${alt.transfers} ${alt.transfers !== 1 ? localize(lang, "transfers") : localize(lang, "transfer")}</span>
               <span class="alt-risk ${this._getRiskClass(alt.transfer_risk)}">
                 <ha-icon
