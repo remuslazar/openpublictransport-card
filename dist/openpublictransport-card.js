@@ -290,13 +290,14 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     vertical-align: middle;
   }
 
-  /* Time column */
+  /* Time column: the time that will actually happen, the delay that explains
+     it, and the countdown under both. */
   .time-cell {
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
 
-  .time-planned {
+  .time-departure {
     font-weight: 600;
   }
 
@@ -895,7 +896,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
         display: inline-flex;
         align-items: baseline;
       }
-    `],t([ct({type:Number})],At.prototype,"delay",void 0),t([ct({type:Boolean,attribute:"is-realtime"})],At.prototype,"isRealtime",void 0),At=t([dt("openpublictransport-delay-badge")],At);let zt=class extends ot{constructor(){super(...arguments),this.departures=[],this.stationName=""}_getCurrentTime(){return(new Date).toLocaleTimeString(this.hass?.language||"de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}_collectNotices(){const t=[];for(const e of this.departures)if(e.notices)for(const i of e.notices)t.includes(i)||t.push(i);return t}_countdown(t){const e=t.minutes_until_departure;return e<=0?bt(this.hass.language,"now"):1===e?bt(this.hass.language,"in_1_min"):bt(this.hass.language,"in_min",{min:e})}_renderHeader(){return this.config.show_header?B`
+    `],t([ct({type:Number})],At.prototype,"delay",void 0),t([ct({type:Boolean,attribute:"is-realtime"})],At.prototype,"isRealtime",void 0),At=t([dt("openpublictransport-delay-badge")],At);let zt=class extends ot{constructor(){super(...arguments),this.departures=[],this.stationName=""}_getCurrentTime(){return(new Date).toLocaleTimeString(this.hass?.language||"de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}_collectNotices(){const t=[];for(const e of this.departures)if(e.notices)for(const i of e.notices)t.includes(i)||t.push(i);return t}_departureTime(t){return t.departure_time||t.planned_time||""}_countdown(t){const e=t.minutes_until_departure;return e<=0?bt(this.hass.language,"now"):1===e?bt(this.hass.language,"in_1_min"):bt(this.hass.language,"in_min",{min:e})}_renderHeader(){return this.config.show_header?B`
       <div class="card-header">
         <span class="station-name">${this.stationName||"Departures"}</span>
         <span class="current-time">${this._getCurrentTime()}</span>
@@ -919,7 +920,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       `:B`<td class="platform-cell">${t.platform}</td>`:B`<td class="platform-cell"></td>`:W}_renderRow(t){const e=t.line_color?`background:${t.line_color};color:${t.line_text_color||"#000"}`:"";return B`
       <tr>
         <td class="time-cell">
-          <span class="time-planned">${t.planned_time||""}</span>
+          <span class="time-departure">${this._departureTime(t)}</span>
           ${this.config.show_delay?B`
                 <openpublictransport-delay-badge
                   .delay=${t.delay}
@@ -1123,7 +1124,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
 
         <div class="next-bottom">
           <span class=${a}>${this._renderCountdown(n)}</span>
-          <span class="next-time">${e.planned_time}</span>
+          <span class="next-time">${e.departure_time||e.planned_time}</span>
           ${this.config.show_delay?B`<openpublictransport-delay-badge
                 .delay=${e.delay}
                 ?is-realtime=${e.is_realtime}

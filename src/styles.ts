@@ -269,13 +269,14 @@ export const cardStyles = css`
     vertical-align: middle;
   }
 
-  /* Time column */
+  /* Time column: the time that will actually happen, the delay that explains
+     it, and the countdown under both. */
   .time-cell {
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
   }
 
-  .time-planned {
+  .time-departure {
     font-weight: 600;
   }
 

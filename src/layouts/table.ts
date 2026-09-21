@@ -35,6 +35,16 @@ export class TableLayout extends LitElement {
     return notices;
   }
 
+  /**
+   * The time the departure will actually happen: the provider's estimate when
+   * it has one, the timetable otherwise. The countdown beside it already runs
+   * to the estimate, so a row that showed the timetable said 14:40 over "in 4
+   * min" at 14:38; the delay badge now explains the difference instead.
+   */
+  private _departureTime(dep: Departure): string {
+    return dep.departure_time || dep.planned_time || "";
+  }
+
   private _countdown(dep: Departure): string {
     const mins = dep.minutes_until_departure;
     if (mins <= 0) return localize(this.hass.language, "now");
@@ -97,7 +107,7 @@ export class TableLayout extends LitElement {
     return html`
       <tr>
         <td class="time-cell">
-          <span class="time-planned">${dep.planned_time || ""}</span>
+          <span class="time-departure">${this._departureTime(dep)}</span>
           ${this.config.show_delay
             ? html`
                 <openpublictransport-delay-badge
