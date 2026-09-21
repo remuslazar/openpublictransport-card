@@ -219,9 +219,13 @@ export const cardStyles = css`
     flex-shrink: 0;
   }
 
+  /* The table's own box, so its columns can answer to the card's width (see
+     the container query below). */
   .card-content {
-    /* left/right inset aligns columns with the header; bottom gap below last row */
-    padding: 0 4px 12px;
+    container-type: inline-size;
+    /* The last row's own padding and this make Home Assistant's 16px below the
+       content. */
+    padding: 0 0 8px;
   }
 
   /* Disruption banner */
@@ -239,19 +243,39 @@ export const cardStyles = css`
     --opt-icon-size: 16px;
   }
 
-  /* Table layout */
+  /* Table layout. The table is as wide as the card and never wider: the
+     destination takes whatever the other columns leave and gives way first. */
   .departure-table {
     width: 100%;
     border-collapse: collapse;
   }
 
+  /* 12px between columns, and Home Assistant's 16px inset at either edge, so
+     the first column starts on the header's text and on the dashboard's own
+     column. Twelve pixels a side on every cell spent 96px of a 384px card on
+     padding and pushed the platform column off it. */
+  .departure-table th,
+  .departure-table td {
+    padding: 8px 6px;
+  }
+
+  .departure-table th:first-child,
+  .departure-table td:first-child {
+    padding-left: 16px;
+  }
+
+  .departure-table th:last-child,
+  .departure-table td:last-child {
+    padding-right: 16px;
+  }
+
   .departure-table thead th {
-    padding: 8px 12px;
     text-align: left;
     font-size: var(--opt-font-size-label);
     font-weight: var(--opt-font-weight-medium);
     text-transform: var(--opt-caps);
     letter-spacing: calc(var(--opt-tracking) * 0.5px);
+    white-space: nowrap;
     color: var(--opt-text-secondary);
     /* keep the header row pinned at the top of the scrolling list */
     position: sticky;
@@ -276,7 +300,6 @@ export const cardStyles = css`
   }
 
   .departure-table td {
-    padding: 10px 12px;
     font-size: var(--ha-font-size-m, 14px);
     vertical-align: middle;
   }
@@ -311,8 +334,11 @@ export const cardStyles = css`
     margin-top: 2px;
   }
 
-  /* Line cell */
+  /* Line cell. The vehicle icon is the card's 16px, not ha-icon's 24px
+     default: the line badge is what identifies the service, and the vehicle
+     beside it only qualifies it. */
   .line-cell {
+    --opt-icon-size: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -331,10 +357,26 @@ export const cardStyles = css`
     color: var(--opt-on-accent);
   }
 
-  /* Destination */
+  /* Destination: the rest of the row. A zero max-width lets a table cell
+     shrink below its text, so the name ellipsises instead of widening the
+     table past the card; the 100% width hands it every pixel the other
+     columns do not need. */
   .destination-cell {
+    width: 100%;
+    max-width: 0;
     font-weight: 500;
-    max-width: 200px;
+  }
+
+  /* A departure's notice mark follows its destination. In the line column it
+     widened that column for every row, notice or not. */
+  .destination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .destination-name {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -344,6 +386,7 @@ export const cardStyles = css`
   .platform-cell {
     text-align: center;
     font-weight: var(--opt-font-weight-medium);
+    white-space: nowrap;
   }
 
   .platform-changed {
@@ -357,9 +400,33 @@ export const cardStyles = css`
     font-weight: 700;
   }
 
+  /* The short platform label is for narrow cards only. */
+  .label-short {
+    display: none;
+  }
+
+  /* A card in a narrow column — a phone, a dashboard of four — keeps every
+     column rather than losing the last one off its edge: the vehicle icon
+     goes, since the line badge already names the service, and the platform
+     heading takes its short form. */
+  @container (max-width: 340px) {
+    .line-cell openpublictransport-transport-icon {
+      display: none;
+    }
+
+    .label-long {
+      display: none;
+    }
+
+    .label-short {
+      display: inline;
+    }
+  }
+
   /* Notices */
   .notice-icon {
     --opt-icon-size: 16px;
+    flex-shrink: 0;
     color: var(--opt-delay-yellow);
     cursor: help;
   }
