@@ -819,6 +819,19 @@ export const cardStyles = css`
     color: var(--opt-on-delay);
   }
 
+  /* The drawn mark: as tall as the pill's line, so an on-time badge is the
+     height of a delayed one, and stroked about as heavy as the figures. */
+  .delay-badge .check {
+    display: block;
+    width: 1.2em;
+    height: 1.6em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   /* Editor styles */
   .card-config {
     padding: 16px;

@@ -2,6 +2,16 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { cardStyles } from "../styles";
 
+/**
+ * The on-time mark. Drawn rather than typed, like the trip layout's arrow:
+ * U+2713 is in neither Home Assistant's body font nor the boards' monospace
+ * faces, so it came from whatever fallback font the platform has — a hairline
+ * at the badge's 10px, lighter than the figures on every other badge.
+ */
+const CHECK = html`<svg class="check" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+  <path d="M2.5 6.5 5 9l4.5-5.5" />
+</svg>`;
+
 @customElement("openpublictransport-delay-badge")
 export class DelayBadge extends LitElement {
   static styles = [
@@ -31,7 +41,7 @@ export class DelayBadge extends LitElement {
 
     if (this.delay === 0 && this.isRealtime) {
       return html`
-        <span class="delay-badge on-time">&check;</span>
+        <span class="delay-badge on-time" role="img" aria-label="&check;">${CHECK}</span>
       `;
     }
 
