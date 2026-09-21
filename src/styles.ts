@@ -105,7 +105,10 @@ export const hostStyles = css`
        5.1:1. */
     --opt-delay-red: #d32f2f;
     --opt-delay-green: #2e7d32;
-    --opt-delay-yellow: #fdd835;
+    /* A dark amber: the dark board's yellow measures 1.4:1 on white, where it
+       marks a departure's notices and a transfer's risk — invisible. This
+       measures 3.6:1, above the 3:1 an icon needs. */
+    --opt-delay-yellow: #b07d00;
     --opt-on-delay: #ffffff;
     --opt-header-bg: #f5f5f5;
     --opt-header-rule: var(--opt-border);
@@ -214,7 +217,7 @@ export const cardStyles = css`
   .card-header .current-time {
     font-size: var(--ha-font-size-m, 14px);
     font-variant-numeric: tabular-nums;
-    opacity: 0.8;
+    color: var(--opt-text-secondary);
     margin-left: 12px;
     flex-shrink: 0;
   }
@@ -330,7 +333,7 @@ export const cardStyles = css`
   .time-countdown {
     display: block;
     font-size: var(--opt-font-size-label);
-    opacity: 0.7;
+    color: var(--opt-text-secondary);
     margin-top: 2px;
   }
 
@@ -389,9 +392,12 @@ export const cardStyles = css`
     white-space: nowrap;
   }
 
+  /* The platform the timetable named, struck through. Secondary text, not a
+     faded copy of the primary: at half opacity it measured 3.3:1 on the light
+     board and 4.1:1 on the dark one. */
   .platform-changed {
     text-decoration: line-through;
-    opacity: 0.5;
+    color: var(--opt-text-secondary);
     margin-right: 4px;
   }
 
@@ -473,7 +479,7 @@ export const cardStyles = css`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    opacity: 0.8;
+    color: var(--opt-text-secondary);
   }
 
   .compact-chip .chip-countdown {
@@ -810,13 +816,17 @@ export const cardStyles = css`
     border-bottom: none;
   }
 
-  /* Error / Empty states */
+  /* Error / Empty states, set back by colour rather than opacity: the error's
+     red at 70% measured 3.2:1 on the light board and 2.8:1 on the dark one. */
   .card-error,
   .card-empty {
     padding: 24px 16px;
     text-align: center;
     font-size: var(--ha-font-size-m, 14px);
-    opacity: 0.7;
+  }
+
+  .card-empty {
+    color: var(--opt-text-secondary);
   }
 
   .card-error {
