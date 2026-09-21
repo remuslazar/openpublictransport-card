@@ -118,6 +118,7 @@ export class TableLayout extends LitElement {
                   <openpublictransport-delay-badge
                     .delay=${dep.delay}
                     ?is-realtime=${dep.is_realtime}
+                    .language=${this.hass.language}
                   ></openpublictransport-delay-badge>
                 `
               : nothing}
