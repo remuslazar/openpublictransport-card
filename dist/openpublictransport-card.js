@@ -37,6 +37,15 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */function ut(t){return ct({...t,state:!0,attribute:!1})}const gt=s`
+  /* The card fills the cell a section grid gives it, so that ha-card's
+     max-height has a height to resolve against. With a fixed row count the
+     layout's body then scrolls inside the cell instead of the card being drawn
+     over the one below; with the row count on auto the cell is as tall as the
+     card, and this changes nothing. */
+  :host {
+    height: 100%;
+  }
+
   /* theme: ha, and the palette before a theme is applied. Everything is taken
      from the Home Assistant palette and type, so the card follows the
      dashboard's theme — light, dark or custom — instead of carrying colours of
@@ -118,11 +127,10 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     font-family: var(--opt-font-family);
     display: flex;
     flex-direction: column;
-    /* The card takes the height its content needs. The max-height only bites
-       when the dashboard gives the card a definite height — a fixed row count —
-       and the body then scrolls instead of the card overflowing its cell. With
-       the row count on auto the height is indefinite, so this resolves to none
-       and the card simply grows. */
+    /* The card takes the height its content needs, up to the height of the
+       cell it is given (see hostStyles). With a fixed row count that is less
+       than a long journey needs, and the layout's body scrolls; with the row
+       count on auto the cell grows with the card. */
     max-height: 100%;
   }
 
@@ -140,6 +148,18 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   .card-header,
   .disruption-banner {
     flex-shrink: 0;
+  }
+
+  /* Each layout's body is what scrolls when the card is given less height than
+     it needs — the header and a disruption banner stay put. Only the table's
+     body used to: the others were clipped at the cell's edge, so a trip card
+     at its default five rows lost its alternatives with no way to reach them. */
+  .card-content,
+  .trip-container,
+  .compact-container,
+  .next-container {
+    min-height: 0;
+    overflow-y: auto;
   }
 
   /* Icon sizing fallback: keeps legacy mdc variable and explicit dimensions in sync.
@@ -188,8 +208,6 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   .card-content {
     /* left/right inset aligns columns with the header; bottom gap below last row */
     padding: 0 4px 12px;
-    min-height: 0;
-    overflow-y: auto;
   }
 
   /* Disruption banner */
