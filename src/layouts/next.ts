@@ -26,13 +26,13 @@ export class NextLayout extends LitElement {
       }
 
       /* The station: one line, like the station name in the other layouts'
-         header. */
+         header. Secondary text rather than a faded copy of it — at 80%
+         opacity it measured 3.7:1 on the light board. */
       .next-station {
         font-size: var(--opt-font-size-label);
         text-transform: var(--opt-caps);
         letter-spacing: calc(var(--opt-tracking) * 0.08em);
         color: var(--opt-text-secondary);
-        opacity: 0.8;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -50,11 +50,13 @@ export class NextLayout extends LitElement {
         opacity: 0.85;
       }
 
+      /* Text on the badge is the palette's text-on-accent; it was black on
+         every theme, whatever the badge's colour. */
       .next-line-badge {
         font-size: var(--ha-font-size-m, 14px);
         font-weight: 700;
-        background: var(--opt-accent, #ffd700);
-        color: #000;
+        background: var(--opt-line-bg);
+        color: var(--opt-on-accent);
         padding: 3px 8px;
         border-radius: 4px;
         flex-shrink: 0;

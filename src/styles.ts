@@ -33,13 +33,27 @@ export const hostStyles = css`
     --opt-text-secondary: var(--secondary-text-color);
     --opt-border: var(--divider-color);
     --opt-accent: var(--primary-color);
-    /* Readable text on top of an accent-coloured surface (line badges). */
-    --opt-on-accent: var(--text-primary-color);
-    --opt-delay-red: var(--error-color);
-    --opt-delay-green: var(--success-color);
-    --opt-delay-yellow: var(--warning-color);
-    /* Readable text on top of the delay colours (delay badges, the banner). */
-    --opt-on-delay: var(--text-primary-color);
+    /* The line badge is a tint of the primary colour carrying the body text,
+       the way Home Assistant tints a tile's icon, rather than a solid primary
+       under white: white on --primary-color measures 3.3:1. The tint keeps the
+       text's own contrast on any theme — 14.7:1 on the default light one, 10:1
+       on the dark. */
+    --opt-line-bg: color-mix(in srgb, var(--primary-color) 20%, transparent);
+    /* Readable text on top of the line badge. */
+    --opt-on-accent: var(--primary-text-color);
+    /* The status colours a quarter of the way toward the text colour: darker on
+       a light theme, lighter on a dark one. As they come, --error-color measures
+       4.3:1 as text on a white card and 4.0:1 on the dark one, and 4.3:1 under
+       white figures; --success-color 3.3:1 under white figures; and
+       --warning-color 2.0:1 as an icon on white. Mixed, red measures 6.4:1 and
+       5.2:1 both ways, green 5.0:1 and 6.5:1, amber 3.2:1 and 9.4:1. */
+    --opt-delay-red: color-mix(in srgb, var(--error-color) 75%, var(--primary-text-color));
+    --opt-delay-green: color-mix(in srgb, var(--success-color) 75%, var(--primary-text-color));
+    --opt-delay-yellow: color-mix(in srgb, var(--warning-color) 75%, var(--primary-text-color));
+    /* Figures on the status colours take the card's own colour — white on a
+       light theme, the dark card on a dark one — since the mix above moves the
+       colour away from exactly that. */
+    --opt-on-delay: var(--opt-bg);
     /* Home Assistant's own heading: no band and no rule, no capitals, and the
        size and weight of its heading card's title. The entities card's 24px
        title outweighs a departure list below it. */
@@ -66,6 +80,7 @@ export const hostStyles = css`
     --opt-text-secondary: #cccccc;
     --opt-border: rgba(255, 215, 0, 0.15);
     --opt-accent: var(--accent-color, #ffd700);
+    --opt-line-bg: var(--opt-accent);
     --opt-on-accent: #000000;
     --opt-delay-red: #e53935;
     --opt-delay-green: #43a047;
@@ -99,13 +114,17 @@ export const hostStyles = css`
     --opt-text-secondary: #666666;
     --opt-border: rgba(0, 0, 0, 0.12);
     --opt-accent: var(--accent-color, #ffd700);
+    --opt-line-bg: var(--opt-accent);
     --opt-on-accent: #000000;
     /* A shade darker than the dark board's red and green, which measure 4.2:1
        and 3.3:1 against white text and white paper; these measure 5.0:1 and
        5.1:1. */
     --opt-delay-red: #d32f2f;
     --opt-delay-green: #2e7d32;
-    --opt-delay-yellow: #fdd835;
+    /* A dark amber: the dark board's yellow measures 1.4:1 on white, where it
+       marks a departure's notices and a transfer's risk — invisible. This
+       measures 3.6:1, above the 3:1 an icon needs. */
+    --opt-delay-yellow: #b07d00;
     --opt-on-delay: #ffffff;
     --opt-header-bg: #f5f5f5;
     --opt-header-rule: var(--opt-border);
@@ -214,7 +233,7 @@ export const cardStyles = css`
   .card-header .current-time {
     font-size: var(--ha-font-size-m, 14px);
     font-variant-numeric: tabular-nums;
-    opacity: 0.8;
+    color: var(--opt-text-secondary);
     margin-left: 12px;
     flex-shrink: 0;
   }
@@ -330,7 +349,7 @@ export const cardStyles = css`
   .time-countdown {
     display: block;
     font-size: var(--opt-font-size-label);
-    opacity: 0.7;
+    color: var(--opt-text-secondary);
     margin-top: 2px;
   }
 
@@ -353,7 +372,7 @@ export const cardStyles = css`
     border-radius: 4px;
     font-weight: 700;
     font-size: var(--opt-font-size-badge);
-    background: var(--opt-accent);
+    background: var(--opt-line-bg);
     color: var(--opt-on-accent);
   }
 
@@ -389,9 +408,12 @@ export const cardStyles = css`
     white-space: nowrap;
   }
 
+  /* The platform the timetable named, struck through. Secondary text, not a
+     faded copy of the primary: at half opacity it measured 3.3:1 on the light
+     board and 4.1:1 on the dark one. */
   .platform-changed {
     text-decoration: line-through;
-    opacity: 0.5;
+    color: var(--opt-text-secondary);
     margin-right: 4px;
   }
 
@@ -473,7 +495,7 @@ export const cardStyles = css`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    opacity: 0.8;
+    color: var(--opt-text-secondary);
   }
 
   .compact-chip .chip-countdown {
@@ -810,13 +832,17 @@ export const cardStyles = css`
     border-bottom: none;
   }
 
-  /* Error / Empty states */
+  /* Error / Empty states, set back by colour rather than opacity: the error's
+     red at 70% measured 3.2:1 on the light board and 2.8:1 on the dark one. */
   .card-error,
   .card-empty {
     padding: 24px 16px;
     text-align: center;
     font-size: var(--ha-font-size-m, 14px);
-    opacity: 0.7;
+  }
+
+  .card-empty {
+    color: var(--opt-text-secondary);
   }
 
   .card-error {
