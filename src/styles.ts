@@ -1,27 +1,92 @@
 import { css } from "lit";
 
-export const cardStyles = css`
-  /* Everything the card paints is taken from the Home Assistant palette, so it
-     follows the dashboard's theme — light, dark or custom — instead of carrying
-     colours of its own. The --opt-* indirection is kept because the layouts are
-     written against it. */
+/**
+ * Rules for the card element alone: its palettes, one per `theme`. The card
+ * carries the resolved theme as `data-theme` ("auto" resolves to "dark" or
+ * "light" by the dashboard's mode), and the palettes set the --opt-* variables
+ * there.
+ *
+ * They are kept out of cardStyles, which every layout and badge shares. Each of
+ * those has its own shadow root, and a palette declared in the shared sheet was
+ * declared again on every one of them — where no data-theme exists — so
+ * everything inside a layout was painted from the base block whatever the
+ * theme said. Declared once, on the card, the variables inherit into every
+ * shadow root below it.
+ */
+export const hostStyles = css`
+  /* theme: ha, and the palette before a theme is applied. Everything is taken
+     from the Home Assistant palette and type, so the card follows the
+     dashboard's theme — light, dark or custom — instead of carrying colours of
+     its own. */
   :host {
     --opt-bg: var(--ha-card-background, var(--card-background-color));
     --opt-text: var(--primary-text-color);
     --opt-text-secondary: var(--secondary-text-color);
     --opt-border: var(--divider-color);
     --opt-accent: var(--primary-color);
-    /* Readable text on top of an accent-coloured surface (badges). */
+    /* Readable text on top of an accent-coloured surface (line badges). */
     --opt-on-accent: var(--text-primary-color);
     --opt-delay-red: var(--error-color);
     --opt-delay-green: var(--success-color);
     --opt-delay-yellow: var(--warning-color);
+    /* Readable text on top of the delay colours (delay badges, the banner). */
+    --opt-on-delay: var(--text-primary-color);
     /* Tinted from the text colour, so the same rule works on a light and on a
        dark theme without a second palette. */
     --opt-header-bg: color-mix(in srgb, var(--primary-text-color) 4%, transparent);
     --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
     --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
+    --opt-font-weight-medium: var(--ha-font-weight-medium, 500);
+  }
 
+  /* The departure board: gold on black, in a monospace face. */
+  :host([data-theme="dark"]) {
+    --opt-bg: #0a0a0a;
+    --opt-text: #ffd700;
+    --opt-text-secondary: #cccccc;
+    --opt-border: rgba(255, 215, 0, 0.15);
+    --opt-accent: var(--accent-color, #ffd700);
+    --opt-on-accent: #000000;
+    --opt-delay-red: #e53935;
+    --opt-delay-green: #43a047;
+    --opt-delay-yellow: #fdd835;
+    /* Black, not white: white on this red measures 4.2:1 and on this green
+       3.3:1, below the 4.5:1 a badge's small figures need. The red itself stays,
+       since it is also text on the black card, where it measures 4.7:1. */
+    --opt-on-delay: #000000;
+    --opt-header-bg: rgba(0, 0, 0, 0.4);
+    --opt-row-hover: rgba(255, 215, 0, 0.05);
+    --opt-font-family: "Roboto Mono", "Courier New", monospace;
+    /* The faces this falls back to — Courier New, DejaVu Sans Mono — have no
+       medium, so 500 would drop to regular and a station name would lose the
+       bold it has always had here. */
+    --opt-font-weight-medium: 600;
+  }
+
+  /* The same board on white. */
+  :host([data-theme="light"]) {
+    --opt-bg: #ffffff;
+    --opt-text: #1a1a1a;
+    --opt-text-secondary: #666666;
+    --opt-border: rgba(0, 0, 0, 0.12);
+    --opt-accent: var(--accent-color, #ffd700);
+    --opt-on-accent: #000000;
+    /* A shade darker than the dark board's red and green, which measure 4.2:1
+       and 3.3:1 against white text and white paper; these measure 5.0:1 and
+       5.1:1. */
+    --opt-delay-red: #d32f2f;
+    --opt-delay-green: #2e7d32;
+    --opt-delay-yellow: #fdd835;
+    --opt-on-delay: #ffffff;
+    --opt-header-bg: #f5f5f5;
+    --opt-row-hover: rgba(0, 0, 0, 0.03);
+    --opt-font-family: "Roboto Mono", "Courier New", monospace;
+    --opt-font-weight-medium: 600;
+  }
+`;
+
+export const cardStyles = css`
+  :host {
     display: block;
   }
 
@@ -109,7 +174,7 @@ export const cardStyles = css`
   /* Disruption banner */
   .disruption-banner {
     background: var(--opt-delay-red);
-    color: var(--opt-on-accent);
+    color: var(--opt-on-delay);
     padding: 8px 16px;
     font-size: 12px;
     display: flex;
@@ -466,7 +531,7 @@ export const cardStyles = css`
 
   .leg-station {
     font-size: var(--ha-font-size-m, 14px);
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
     line-height: var(--opt-station-line);
   }
 
@@ -485,11 +550,11 @@ export const cardStyles = css`
 
   .leg-time {
     font-variant-numeric: tabular-nums;
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
   }
 
   .leg-line {
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
   }
 
   /* The line and where it is headed: one phrase, so the arrow between them sits
@@ -535,7 +600,7 @@ export const cardStyles = css`
   .leg-departure {
     flex-shrink: 0;
     font-size: var(--ha-font-size-m, 14px);
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
     line-height: var(--opt-station-line);
     color: var(--opt-text);
   }
@@ -582,7 +647,7 @@ export const cardStyles = css`
      that separates the two goes above the heading, not between them. */
   .alt-journeys-title {
     font-size: var(--ha-font-size-m, 14px);
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
     color: var(--opt-text-secondary);
     margin-bottom: 2px;
   }
@@ -641,19 +706,19 @@ export const cardStyles = css`
     padding: 0 4px;
     border-radius: 4px;
     font-size: var(--ha-font-size-xs, 10px);
-    font-weight: var(--ha-font-weight-medium, 500);
+    font-weight: var(--opt-font-weight-medium);
     font-variant-numeric: tabular-nums;
     line-height: 1.6;
   }
 
   .delay-badge.delayed {
     background: var(--opt-delay-red);
-    color: var(--opt-on-accent);
+    color: var(--opt-on-delay);
   }
 
   .delay-badge.on-time {
     background: var(--opt-delay-green);
-    color: var(--opt-on-accent);
+    color: var(--opt-on-delay);
   }
 
   /* Editor styles */

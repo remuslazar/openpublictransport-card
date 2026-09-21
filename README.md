@@ -97,7 +97,7 @@ show_header: true
 | `show_platform`           | boolean | `true`  | Show platform/track column                                                  |
 | `show_delay`              | boolean | `true`  | Show delay badges                                                           |
 | `show_realtime_indicator` | boolean | `true`  | Show green checkmark for on-time realtime                                   |
-| `theme`                   | string  | `auto`  | Theme: `dark`, `light`, `auto`                                              |
+| `theme`                   | string  | `auto`  | Theme: `dark`, `light`, `auto`, `ha`. `dark` and `light` are the departure board — gold on black or dark on white, in a monospace face — and `auto` picks one of the two by the dashboard's dark mode. `ha` takes colours and font from the Home Assistant theme, so the card looks like the cards around it |
 
 ## Line Colors
 
@@ -168,7 +168,9 @@ a strike. The trip sensor re-routes; the card just shows the result.
 
 ## Text size and font
 
-The card has no font options of its own. Everything below works through
+The card has no font options of its own: the face comes with the `theme`, a
+monospace one for the departure board (`dark`, `light`, `auto`) and Home
+Assistant's own for `ha`. Everything below works through
 [card-mod](https://github.com/thomasloven/lovelace-card-mod), which has to be
 installed separately.
 
