@@ -114,10 +114,14 @@ export class TableLayout extends LitElement {
               transport-type=${dep.transportation_type}
             ></openpublictransport-transport-icon>
             <span class="line-badge" style=${badgeStyle}>${dep.line}</span>
+          </span>
+        </td>
+        <td class="destination-cell">
+          <span class="destination">
+            <span class="destination-name">${dep.destination}</span>
             ${this._renderNotices(dep)}
           </span>
         </td>
-        <td class="destination-cell">${dep.destination}</td>
         ${this._renderPlatformCell(dep)}
       </tr>
     `;
@@ -144,7 +148,10 @@ export class TableLayout extends LitElement {
               <th>${localize(this.hass.language, "line")}</th>
               <th>${localize(this.hass.language, "destination")}</th>
               ${this.config.show_platform
-                ? html`<th>${localize(this.hass.language, "track")}</th>`
+                ? html`<th>
+                    <span class="label-long">${localize(this.hass.language, "track")}</span>
+                    <span class="label-short">${localize(this.hass.language, "platform")}</span>
+                  </th>`
                 : nothing}
             </tr>
           </thead>
