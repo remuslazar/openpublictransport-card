@@ -63,9 +63,20 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     --opt-delay-yellow: var(--warning-color);
     /* Readable text on top of the delay colours (delay badges, the banner). */
     --opt-on-delay: var(--text-primary-color);
-    /* Tinted from the text colour, so the same rule works on a light and on a
-       dark theme without a second palette. */
-    --opt-header-bg: color-mix(in srgb, var(--primary-text-color) 4%, transparent);
+    /* Home Assistant's own heading: no band and no rule, no capitals, and the
+       size and weight of its heading card's title. The entities card's 24px
+       title outweighs a departure list below it. */
+    --opt-header-bg: transparent;
+    --opt-header-rule: transparent;
+    --opt-header-font-size: var(--ha-font-size-l, 16px);
+    --opt-header-font-weight: var(--ha-font-weight-normal, 400);
+    --opt-header-line-height: var(--ha-line-height-normal, 1.6);
+    /* Labels (column headings, the station line) in sentence case, untracked. */
+    --opt-caps: none;
+    --opt-tracking: 0;
+    /* Small text on Home Assistant's scale: labels, countdowns, chips, badges. */
+    --opt-font-size-label: var(--ha-font-size-s, 12px);
+    --opt-font-size-badge: var(--ha-font-size-s, 12px);
     --opt-row-hover: color-mix(in srgb, var(--primary-text-color) 6%, transparent);
     --opt-font-family: var(--ha-font-family-body, Roboto, Noto, sans-serif);
     --opt-font-weight-medium: var(--ha-font-weight-medium, 500);
@@ -86,7 +97,16 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
        3.3:1, below the 4.5:1 a badge's small figures need. The red itself stays,
        since it is also text on the black card, where it measures 4.7:1. */
     --opt-on-delay: #000000;
+    /* The board's header: a band under a rule, in tracked capitals. */
     --opt-header-bg: rgba(0, 0, 0, 0.4);
+    --opt-header-rule: var(--opt-border);
+    --opt-header-font-size: 14px;
+    --opt-header-font-weight: 700;
+    --opt-header-line-height: normal;
+    --opt-caps: uppercase;
+    --opt-tracking: 1;
+    --opt-font-size-label: 11px;
+    --opt-font-size-badge: 13px;
     --opt-row-hover: rgba(255, 215, 0, 0.05);
     --opt-font-family: "Roboto Mono", "Courier New", monospace;
     /* The faces this falls back to — Courier New, DejaVu Sans Mono — have no
@@ -111,6 +131,14 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     --opt-delay-yellow: #fdd835;
     --opt-on-delay: #ffffff;
     --opt-header-bg: #f5f5f5;
+    --opt-header-rule: var(--opt-border);
+    --opt-header-font-size: 14px;
+    --opt-header-font-weight: 700;
+    --opt-header-line-height: normal;
+    --opt-caps: uppercase;
+    --opt-tracking: 1;
+    --opt-font-size-label: 11px;
+    --opt-font-size-badge: 13px;
     --opt-row-hover: rgba(0, 0, 0, 0.03);
     --opt-font-family: "Roboto Mono", "Courier New", monospace;
     --opt-font-weight-medium: 600;
@@ -178,17 +206,21 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     justify-content: center;
   }
 
+  /* The header is the one place the themes part ways in shape rather than
+     colour: the board's band of tracked capitals under a rule, or Home
+     Assistant's own heading. Each theme's palette says which. */
   .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     padding: 12px 16px;
     background: var(--opt-header-bg);
-    border-bottom: 1px solid var(--opt-border);
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    border-bottom: 1px solid var(--opt-header-rule);
+    font-size: var(--opt-header-font-size);
+    font-weight: var(--opt-header-font-weight);
+    line-height: var(--opt-header-line-height);
+    text-transform: var(--opt-caps);
+    letter-spacing: calc(var(--opt-tracking) * 1px);
   }
 
   .card-header .station-name {
@@ -198,7 +230,10 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     white-space: nowrap;
   }
 
+  /* The clock is secondary to the station, and keeps the body size under a
+     title that is larger than it. */
   .card-header .current-time {
+    font-size: var(--ha-font-size-m, 14px);
     font-variant-numeric: tabular-nums;
     opacity: 0.8;
     margin-left: 12px;
@@ -219,7 +254,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     background: var(--opt-delay-red);
     color: var(--opt-on-delay);
     padding: 8px 16px;
-    font-size: 12px;
+    font-size: var(--ha-font-size-s, 12px);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -257,10 +292,10 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
 
   .departure-table thead th {
     text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: var(--opt-font-size-label);
+    font-weight: var(--opt-font-weight-medium);
+    text-transform: var(--opt-caps);
+    letter-spacing: calc(var(--opt-tracking) * 0.5px);
     white-space: nowrap;
     color: var(--opt-text-secondary);
     /* keep the header row pinned at the top of the scrolling list */
@@ -286,7 +321,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   }
 
   .departure-table td {
-    font-size: 14px;
+    font-size: var(--ha-font-size-m, 14px);
     vertical-align: middle;
   }
 
@@ -298,7 +333,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   }
 
   .time-departure {
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
   }
 
   /* A time and the delay badge beside it, the badge centred on the time. Set on
@@ -315,7 +350,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
 
   .time-countdown {
     display: block;
-    font-size: 11px;
+    font-size: var(--opt-font-size-label);
     opacity: 0.7;
     margin-top: 2px;
   }
@@ -338,7 +373,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: var(--opt-font-size-badge);
     background: var(--opt-accent);
     color: var(--opt-on-accent);
   }
@@ -371,7 +406,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   /* Platform */
   .platform-cell {
     text-align: center;
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
     white-space: nowrap;
   }
 
@@ -438,7 +473,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     border-radius: 8px;
     border: 2px solid var(--opt-border);
     background: var(--opt-bg);
-    font-size: 13px;
+    font-size: var(--opt-font-size-badge);
     transition: border-color 0.2s ease;
   }
 
@@ -463,7 +498,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   }
 
   .compact-chip .chip-countdown {
-    font-weight: 600;
+    font-weight: var(--opt-font-weight-medium);
     font-variant-numeric: tabular-nums;
   }
 
@@ -801,7 +836,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
   .card-empty {
     padding: 24px 16px;
     text-align: center;
-    font-size: 14px;
+    font-size: var(--ha-font-size-m, 14px);
     opacity: 0.7;
   }
 
@@ -1175,9 +1210,9 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       /* The station: one line, like the station name in the other layouts'
          header. */
       .next-station {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        font-size: var(--opt-font-size-label);
+        text-transform: var(--opt-caps);
+        letter-spacing: calc(var(--opt-tracking) * 0.08em);
         color: var(--opt-text-secondary);
         opacity: 0.8;
         overflow: hidden;
@@ -1210,7 +1245,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
 
       .next-destination {
         font-size: var(--ha-font-size-l, 16px);
-        font-weight: 600;
+        font-weight: var(--opt-font-weight-medium);
         flex: 1;
         min-width: 0;
         overflow: hidden;
@@ -1243,7 +1278,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       }
 
       .next-platform {
-        font-size: 11px;
+        font-size: var(--opt-font-size-label);
         color: var(--opt-text-secondary);
         margin-left: auto;
         white-space: nowrap;

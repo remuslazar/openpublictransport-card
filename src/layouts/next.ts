@@ -13,7 +13,7 @@ export class NextLayout extends LitElement {
    * dashboard rem is the page's 14px root, so 0.7rem, 1.1rem, 1.8rem and the
    * rest drew 9.8px, 15.4px, 25.2px — sizes between Home Assistant's steps, on
    * a scale of their own beside every other card. Each is now the nearest step,
-   * or, for the two labels, the 11px of the table's column labels.
+   * or the card's label size for the two labels.
    */
   static styles = [
     cardStyles,
@@ -28,9 +28,9 @@ export class NextLayout extends LitElement {
       /* The station: one line, like the station name in the other layouts'
          header. */
       .next-station {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        font-size: var(--opt-font-size-label);
+        text-transform: var(--opt-caps);
+        letter-spacing: calc(var(--opt-tracking) * 0.08em);
         color: var(--opt-text-secondary);
         opacity: 0.8;
         overflow: hidden;
@@ -63,7 +63,7 @@ export class NextLayout extends LitElement {
 
       .next-destination {
         font-size: var(--ha-font-size-l, 16px);
-        font-weight: 600;
+        font-weight: var(--opt-font-weight-medium);
         flex: 1;
         min-width: 0;
         overflow: hidden;
@@ -96,7 +96,7 @@ export class NextLayout extends LitElement {
       }
 
       .next-platform {
-        font-size: 11px;
+        font-size: var(--opt-font-size-label);
         color: var(--opt-text-secondary);
         margin-left: auto;
         white-space: nowrap;
