@@ -107,15 +107,17 @@ export class TableLayout extends LitElement {
     return html`
       <tr>
         <td class="time-cell">
-          <span class="time-departure">${this._departureTime(dep)}</span>
-          ${this.config.show_delay
-            ? html`
-                <openpublictransport-delay-badge
-                  .delay=${dep.delay}
-                  ?is-realtime=${dep.is_realtime}
-                ></openpublictransport-delay-badge>
-              `
-            : nothing}
+          <span class="time-line">
+            <span class="time-departure">${this._departureTime(dep)}</span>
+            ${this.config.show_delay
+              ? html`
+                  <openpublictransport-delay-badge
+                    .delay=${dep.delay}
+                    ?is-realtime=${dep.is_realtime}
+                  ></openpublictransport-delay-badge>
+                `
+              : nothing}
+          </span>
           <span class="time-countdown">${this._countdown(dep)}</span>
         </td>
         <td>

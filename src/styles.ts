@@ -280,6 +280,18 @@ export const cardStyles = css`
     font-weight: 600;
   }
 
+  /* A time and the delay badge beside it, the badge centred on the time. Set on
+     the time's baseline, the badge's figures lined up but its pill did not:
+     they carry no descenders, so the pill's leading and descent all hang below
+     them — 4.4px under the time's digits against 1.4px above. Centring the two
+     boxes puts the pill's middle on the digits' middle, within 0.3px, in
+     whatever face the theme draws them. */
+  .time-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .time-countdown {
     display: block;
     font-size: 11px;
