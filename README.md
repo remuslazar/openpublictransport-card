@@ -204,7 +204,7 @@ The element to name is the one your layout uses:
 
 | Layout | Classes |
 |--------|---------|
-| `table` | `.departure-table td`, `.departure-table thead th`, `.time-planned`, `.time-countdown` |
+| `table` | `.departure-table td`, `.departure-table thead th`, `.time-departure` (the time; `.time-planned` still matches), `.time-countdown` |
 | `next` | `.next-countdown`, `.next-destination`, `.next-line-badge`, `.next-time`, `.next-station` |
 | `trip` | `.trip-header`, `.leg-station`, `.leg-details`, `.alt-journey` |
 

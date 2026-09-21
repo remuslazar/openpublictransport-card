@@ -1010,7 +1010,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       <tr>
         <td class="time-cell">
           <span class="time-line">
-            <span class="time-departure">${this._departureTime(t)}</span>
+            <span class="time-departure time-planned">${this._departureTime(t)}</span>
             ${this.config.show_delay?B`
                   <openpublictransport-delay-badge
                     .delay=${t.delay}
