@@ -396,15 +396,20 @@ export const cardStyles = css`
     cursor: help;
   }
 
-  /* Compact layout */
+  /* Compact layout. The chips start on Home Assistant's 16px inset, where the
+     header's text starts. */
   .compact-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 12px;
+    padding: 12px 16px;
   }
 
+  /* The icon is a transport-icon element, not an ha-icon, so it is sized by
+     the variable it reads: the ha-icon rule this replaces never matched, and
+     the chips drew ha-icon's 24px default. */
   .compact-chip {
+    --opt-icon-size: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -439,10 +444,6 @@ export const cardStyles = css`
   .compact-chip .chip-countdown {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-  }
-
-  .compact-chip ha-icon {
-    --opt-icon-size: 18px;
   }
 
   /* Trip layout */
